@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    {% include "components/basehead.html" %}
+  </head>
+  <body>
+    <header>
+      {% include "components/header.html" %}
+    </header>
+
+    <main id="main-content">
+      {{ content | safe }}
+    </main>
+
+    <footer>
+      {% include "components/footer.html" %}
+    </footer>
+  </body>
+  
+</html>
