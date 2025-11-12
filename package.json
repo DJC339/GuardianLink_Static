@@ -1,0 +1,17 @@
+{
+  "name": "11ty-modular-template",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Modular Eleventy starter with layouts, components, and assets.",
+  "scripts": {
+    "dev": "eleventy --serve",
+    "build": "eleventy"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "devDependencies": {
+    "@11ty/eleventy": "^2.0.1"
+  }
+}
+

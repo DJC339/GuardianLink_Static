@@ -1,0 +1,9 @@
+node_modules/
+_site/
+.DS_Store
+Thumbs.db
+.env
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+

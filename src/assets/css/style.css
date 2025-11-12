@@ -1,0 +1,40 @@
+/* Basic starter styles */
+:root {
+  --bg: #0b0c10;
+  --fg: #e5e7eb;
+  --muted: #9ca3af;
+  --accent: #3b82f6;
+}
+
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, Noto Sans, Helvetica, Arial, "Apple Color Emoji", "Segoe UI Emoji";
+  background: var(--bg);
+  color: var(--fg);
+  line-height: 1.6;
+}
+
+.site-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid #1f2937;
+}
+.site-nav .brand { font-weight: 700; color: var(--fg); text-decoration: none; }
+.site-nav ul { list-style: none; display: flex; gap: 1rem; margin: 0; padding: 0; }
+.site-nav a { color: var(--muted); text-decoration: none; }
+.site-nav a:hover { color: var(--accent); }
+
+main { max-width: 70ch; padding: 1.5rem; margin: 0 auto; }
+
+.post h1 { margin-bottom: 0; }
+.post-meta { color: var(--muted); margin-top: .25rem; }
+
+footer { border-top: 1px solid #1f2937; padding: 1rem 1.25rem; margin-top: 2rem; }
+.social-links { display: flex; gap: 1rem; }
+.social-links a { color: var(--muted); }
+.social-links a:hover { color: var(--accent); }
+
