@@ -3,19 +3,32 @@
   <head>
     {% include "components/basehead.html" %}
   </head>
-  <body>
+  <body class="bg-slate-950 text-slate-100 font-sans antialiased">
     <a class="skip-link" href="#main-content">Skip to content</a>
-    <header>
+    <div class="flex min-h-screen flex-col">
+    <header class="border-b border-slate-800 bg-slate-900/40 backdrop-blur-sm">
       {% include "components/header.html" %}
     </header>
 
-    <main id="main-content">
-      {{ content | safe }}
+    {% if contentWrapperClass is defined %}
+      {% set wrapperClass = contentWrapperClass %}
+    {% else %}
+      {% set wrapperClass = "prose prose-invert prose-headings:tracking-tight prose-a:text-sky-400 prose-blockquote:text-slate-200 prose-strong:text-white" %}
+    {% endif %}
+    <main id="main-content" class="mx-auto flex-1 w-full max-w-3xl px-6 py-10">
+      {% if wrapperClass %}
+        <div class="{{ wrapperClass }}">
+          {{ content | safe }}
+        </div>
+      {% else %}
+        {{ content | safe }}
+      {% endif %}
     </main>
 
-    <footer>
+    <footer class="border-t border-slate-800 px-6 py-8">
       {% include "components/footer.html" %}
     </footer>
+    </div>
   </body>
   
 </html>

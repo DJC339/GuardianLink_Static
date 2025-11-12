@@ -1,0 +1,52 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html {
+    font-size: clamp(16px, 1.6vw, 18px);
+  }
+
+  body {
+    @apply min-h-screen bg-slate-950 text-slate-100 font-sans leading-relaxed antialiased;
+  }
+
+  a {
+    @apply text-sky-400 transition-colors duration-150;
+  }
+
+  a:hover {
+    @apply text-sky-300;
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    @apply outline-none ring-2 ring-offset-2 ring-offset-slate-900 ring-sky-400;
+  }
+
+  a,
+  button {
+    min-height: 44px;
+  }
+}
+
+@layer components {
+  .skip-link {
+    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:px-4 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-md focus:ring-2 focus:ring-sky-400;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

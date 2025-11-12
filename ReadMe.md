@@ -12,58 +12,60 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
 - 404 page (`/404.html`)
 - SEO: canonical URLs, Open Graph + Twitter Card tags, sitemap.xml, robots.txt
 - Images: responsive `<picture>` via `{% img %}` shortcode, Markdown images lazy/async
-- CSS pipeline: `reset.css`, `global.css`, `style.css` (loaded in that order)
+- Tailwind CSS 3 + Autoprefixer with dedicated dev/build scripts (typography plugin included)
 - Netlify config (`netlify.toml`) with cache and strong security headers
 - External link hardening (`rel="noopener noreferrer"` for `target="_blank"`)
 
 ## Project Structure
-```
+```text
 /
-├── .eleventy.js               # Eleventy configuration (engines, filters, shortcodes, transforms)
-├── netlify.toml               # Netlify build, headers (cache + security)
-├── package.json               # Scripts + dev dependencies
-├── .npmrc                     # Pin exact versions
-├── .github/dependabot.yml     # Weekly dependency PRs (GitHub)
-├── src/
-│   ├── _data/
-│   │   ├── global.json        # Site title/description/author/url/language/twitter/image
-│   │   └── navigation.js      # Header nav links
-│   ├── _includes/
-│   │   ├── layouts/
-│   │   │   ├── base.html      # Base layout shell
-│   │   │   └── post.html      # Blog post layout
-│   │   ├── components/
-│   │   │   ├── basehead.html  # <head> content + SEO
-│   │   │   ├── header.html    # Site header + nav
-│   │   │   └── footer.html    # Site footer
-│   │   └── partials/
-│   │       └── social-links.html
-│   ├── assets/
-│   │   ├── css/reset.css
-│   │   ├── css/global.css
-│   │   ├── css/style.css
-│   │   ├── js/
-│   │   └── images/
-│   ├── blog/
-│   │   ├── post-1.md
-│   │   └── post-2.md
-│   └── pages/
-│       ├── index.html         # /
-│       ├── about.html         # /about/
-│       ├── contact.html       # /contact/
-│       ├── services.html      # /services/
-│       ├── blog.html          # /blog/ (list of posts)
-│       ├── 404.html           # /404.html
-│       ├── robots.txt         # /robots.txt
-│       └── sitemap.xml.html   # /sitemap.xml
-└── .gitignore
+|-- .eleventy.js               # Eleventy configuration (engines, filters, shortcodes, transforms)
+|-- netlify.toml               # Netlify build, headers (cache + security)
+|-- package.json               # Scripts + dev dependencies
+|-- package-lock.json
+|-- .npmrc                     # Pin exact versions
+|-- .github/dependabot.yml     # Weekly dependency PRs (GitHub)
+|-- tailwind.config.js         # Tailwind theme + content paths
+|-- postcss.config.js          # Tailwind + Autoprefixer
+|-- src/
+|   |-- _data/
+|   |   |-- global.json        # Site title/description/author/url/language/twitter/image
+|   |   |-- navigation.js      # Header nav links
+|   |-- _includes/
+|   |   |-- layouts/
+|   |   |   |-- base.html      # Base layout shell
+|   |   |   |-- post.html      # Blog post layout
+|   |   |-- components/
+|   |   |   |-- basehead.html  # <head> content + SEO
+|   |   |   |-- header.html    # Site header + nav
+|   |   |   |-- footer.html    # Site footer
+|   |   |-- partials/
+|   |       |-- social-links.html
+|   |-- assets/
+|   |   |-- css/
+|   |   |   |-- tailwind.css   # Source (includes @tailwind directives + custom layers)
+|   |   |   |-- main.css       # Generated output (copied to /assets/css/main.css)
+|   |   |-- js/
+|   |   |-- images/
+|   |-- blog/
+|   |   |-- post-1.md
+|   |   |-- post-2.md
+|   |-- pages/
+|       |-- index.html         # /
+|       |-- about.html         # /about/
+|       |-- contact.html       # /contact/
+|       |-- services.html      # /services/
+|       |-- blog.html          # /blog/ (list of posts)
+|       |-- 404.html           # /404.html
+|       |-- robots.txt         # /robots.txt
+|       |-- sitemap.xml.html   # /sitemap.xml
+|-- .gitignore
 ```
-
 ## Getting Started
 - Install: `npm install`
-- Develop: `npm start` (or `npm run dev`) — serves and watches files
-- Build: `npm run build` — outputs to `_site/`
-
+- Develop: `npm start` (or `npm run dev`) - runs Eleventy serve alongside the Tailwind watcher
+- Build: `npm run build` - runs `build:css` before Eleventy and outputs to `_site/`
+- CSS only: `npm run dev:css` (watch) or `npm run build:css` (single build)
 ## Eleventy Configuration Highlights (`.eleventy.js`)
 - Template engines: `htmlTemplateEngine: 'njk'`, `markdownTemplateEngine: 'njk'`
 - Directories: `input: 'src'`, `includes: '_includes'`, `data: '_data'`, `output: '_site'`
@@ -98,7 +100,7 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
 - Skip link to `#main-content` and focus-visible styles
 - Fluid typography and responsive spacing
 - Nav wraps on small screens
-- Reduced-motion respect in `reset.css`
+- Reduced-motion preferences enforced in `src/assets/css/tailwind.css`
 
 ## Netlify
 - `netlify.toml` sets:
@@ -124,7 +126,7 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
 2) Tweak navigation
    - `src/_data/navigation.js` — add/remove links (e.g., Contact)
 3) Branding and SEO
-   - Update `src/assets/css/global.css` tokens and base styles
+  - Update tokens/utilities inside `src/assets/css/tailwind.css` (or extend `tailwind.config.js`)
    - Add favicons and social image to `src/assets/images`
    - Adjust OG/Twitter tags in `components/basehead.html` as needed
 4) Social links
@@ -152,11 +154,14 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
    - Add scripts in `components/basehead.html` or end of `base.html`
 
 ## Scripts
-- `npm start` — run Eleventy dev server with live reload
-- `npm run dev` — same as start
-- `npm run build` — output site to `_site/`
-
+- `npm start` / `npm run dev` - run Eleventy serve + Tailwind watch in parallel
+- `npm run dev:eleventy` - Eleventy dev server only
+- `npm run dev:css` - Tailwind watcher only
+- `npm run build` - build CSS then run Eleventy (outputs `_site/`)
+- `npm run build:css` - single Tailwind build (minified)
 ## Notes
 - `package.json` has `"private": true` to avoid accidental npm publishing; repo visibility is independent (GitHub can be public)
 - This is a static template; no server-side code
+
+
 
