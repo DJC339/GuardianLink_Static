@@ -1,6 +1,6 @@
 # 11ty Modular Template
 
-An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts, components, global data, and sensible defaults for Netlify.
+An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts, components, global data, security defaults, and Netlify-friendly configuration.
 
 ## Features
 - Eleventy 2.x with HTML + Markdown templates using Nunjucks tags
@@ -9,43 +9,53 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
 - Blog collection via Markdown files under `src/blog/`
 - Internationalized date filter using `Intl.DateTimeFormat`
 - Pages under `src/pages/` with clean permalinks
-- 404 page (`/404.html`) and Netlify config (`netlify.toml`)
-- Static assets passthrough: `src/assets` → `/assets`
-- Production-friendly cache headers (long cache for assets, fresh HTML)
+- 404 page (`/404.html`)
+- SEO: canonical URLs, Open Graph + Twitter Card tags, sitemap.xml, robots.txt
+- Images: responsive `<picture>` via `{% img %}` shortcode, Markdown images lazy/async
+- CSS pipeline: `reset.css`, `global.css`, `style.css` (loaded in that order)
+- Netlify config (`netlify.toml`) with cache and strong security headers
+- External link hardening (`rel="noopener noreferrer"` for `target="_blank"`)
 
 ## Project Structure
 ```
 /
-├── .eleventy.js               # Eleventy configuration (engines, filters, dirs)
-├── netlify.toml               # Netlify build + headers
+├── .eleventy.js               # Eleventy configuration (engines, filters, shortcodes, transforms)
+├── netlify.toml               # Netlify build, headers (cache + security)
 ├── package.json               # Scripts + dev dependencies
+├── .npmrc                     # Pin exact versions
+├── .github/dependabot.yml     # Weekly dependency PRs (GitHub)
 ├── src/
-│   ├── _data/                 # Global data (available to all templates)
-│   │   ├── global.json        # Site title/description/author
+│   ├── _data/
+│   │   ├── global.json        # Site title/description/author/url/language/twitter/image
 │   │   └── navigation.js      # Header nav links
-│   ├── _includes/             # Layouts, components, partials
+│   ├── _includes/
 │   │   ├── layouts/
 │   │   │   ├── base.html      # Base layout shell
 │   │   │   └── post.html      # Blog post layout
 │   │   ├── components/
-│   │   │   ├── basehead.html  # <head> content for base layout
+│   │   │   ├── basehead.html  # <head> content + SEO
 │   │   │   ├── header.html    # Site header + nav
 │   │   │   └── footer.html    # Site footer
 │   │   └── partials/
 │   │       └── social-links.html
-│   ├── assets/                # Static assets (copied as-is)
+│   ├── assets/
+│   │   ├── css/reset.css
+│   │   ├── css/global.css
 │   │   ├── css/style.css
 │   │   ├── js/
 │   │   └── images/
-│   ├── blog/                  # Blog posts (Markdown)
+│   ├── blog/
 │   │   ├── post-1.md
 │   │   └── post-2.md
-│   └── pages/                 # Site pages with permalinks
+│   └── pages/
 │       ├── index.html         # /
 │       ├── about.html         # /about/
 │       ├── contact.html       # /contact/
 │       ├── services.html      # /services/
-│       └── blog.html          # /blog/ (list of posts)
+│       ├── blog.html          # /blog/ (list of posts)
+│       ├── 404.html           # /404.html
+│       ├── robots.txt         # /robots.txt
+│       └── sitemap.xml.html   # /sitemap.xml
 └── .gitignore
 ```
 
@@ -65,23 +75,30 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
     - `{{ date | date() }}` → system locale, medium date
     - `{{ date | date('en-GB','long') }}` → en-GB, long date
     - `{{ date | date('en-US', { dateStyle: 'medium', timeStyle: 'short' }) }}`
+- Responsive images: `{% img src, alt, sizes %}`
+  - Emits AVIF/WebP/JPEG at multiple widths with lazy-loading and async decoding
+  - Example: `{% img '/assets/images/example.jpg', 'Alt text', '(min-width: 768px) 720px, 100vw' %}`
+- Markdown images: automatically get `loading="lazy" decoding="async"`
+- Security transform: adds `rel="noopener noreferrer"` to links with `target="_blank"`
+- Filters: `absoluteUrl(path, base)`, `w3cDate(value)` used by SEO and sitemap
 
-## Pages and Collections
-- Pages live in `src/pages/` and specify a `permalink` in front matter to control URLs.
-- Blog posts live in `src/blog/` with front matter like:
-  ```yaml
-  ---
-  layout: layouts/post.html
-  title: First Post
-  date: 2024-01-15
-  tags: [blog]
-  ---
-  ```
-  Any file tagged `blog` is available in `collections.blog`.
+## SEO
+- Base head (`components/basehead.html`) includes:
+  - Title and description (page front matter overrides global)
+  - Canonical URL
+  - Open Graph: site_name, title, description, url, type (article for blog), image
+  - Twitter Card: `summary_large_image`, site handle, title, description, image
+- Global settings in `src/_data/global.json`:
+  - `title`, `description`, `author`, `url`, `language`, `twitter`, `image`
+- Extras:
+  - `src/pages/sitemap.xml.html` → `/sitemap.xml`
+  - `src/pages/robots.txt` → `/robots.txt` with sitemap pointer
 
-## 404 Page
-- `src/pages/404.html` builds to `/404.html`.
-- Netlify and the Eleventy Dev Server use this automatically for missing routes.
+## Accessibility & Responsive Defaults
+- Skip link to `#main-content` and focus-visible styles
+- Fluid typography and responsive spacing
+- Nav wraps on small screens
+- Reduced-motion respect in `reset.css`
 
 ## Netlify
 - `netlify.toml` sets:
@@ -89,12 +106,11 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
   - Publish dir: `_site`
   - Node version: `18`
   - Cache headers:
-    - `/assets/*`: long cache (`public, max-age=31536000, immutable`)
-    - `/*`: short cache for HTML (`public, max-age=0, must-revalidate`)
-- Deploy steps:
-  1) Connect GitHub repo in Netlify
-  2) Netlify will pick up `netlify.toml` and build on push
-  3) Preview deploys for PRs are automatic
+    - `/assets/*`: `public, max-age=31536000, immutable`
+    - `/*`: `public, max-age=0, must-revalidate`
+  - Security headers:
+    - CSP (default-src 'self'; images allow https and data; no plugins; frame-ancestors self; upgrade-insecure-requests)
+    - Referrer-Policy, X-Content-Type-Options, X-Frame-Options, Permissions-Policy, COOP/CORP, HSTS
 
 ## Using This as a Template
 - On GitHub, enable “Template repository” and click “Use this template”
@@ -104,38 +120,36 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
 
 ## Things To Do After Cloning
 1) Update site metadata
-   - `src/_data/global.json` — title, description, author
+   - `src/_data/global.json` — title, description, author, url, language, twitter, image
 2) Tweak navigation
    - `src/_data/navigation.js` — add/remove links (e.g., Contact)
 3) Branding and SEO
-   - Update `src/assets/css/style.css`
+   - Update `src/assets/css/global.css` tokens and base styles
    - Add favicons and social image to `src/assets/images`
-   - Consider Open Graph/Twitter meta in `components/basehead.html`
+   - Adjust OG/Twitter tags in `components/basehead.html` as needed
 4) Social links
    - Edit `src/_includes/partials/social-links.html`
 5) Content
-   - Replace example pages under `src/pages/`
+   - Replace pages in `src/pages/`
    - Replace or remove sample posts in `src/blog/`
 6) Netlify
    - Connect repo, configure custom domain, HTTPS
-   - Adjust cache headers in `netlify.toml` if needed
+   - Adjust cache headers or CSP in `netlify.toml` if you add external assets/scripts
 7) Asset hashing (recommended for production)
-   - Why: With long cache headers on `/assets/*`, hashing prevents clients from using stale files
+   - With long cache headers on `/assets/*`, add hashing to avoid stale files
    - Options:
-     - Simple Eleventy transform-based approach:
-       - Generate a content hash for each asset filename (e.g., `style.abc123.css`)
-       - Replace references in HTML to point to hashed names
-     - Use a bundler (Vite/Rollup) for CSS/JS:
-       - Let the bundler emit hashed assets and inject links
-     - Use an Eleventy plugin (e.g., `eleventy-plugin-rev`) to automate revving
-   - Minimal custom approach outline:
-     1. Add a build step to hash files in `src/assets` and write to `assets/`
-     2. Provide a data map of original → hashed names (e.g., `_data/assets.json`)
-     3. Update `basehead.html` to use `{{ assets['/assets/css/style.css'] }}` when present
-8) Analytics/consent (optional)
-   - Add your snippet in `components/basehead.html` or at the end of `base.html`
-9) Linting/format (optional)
-   - Add Prettier/ESLint config if you want consistent formatting
+     - Eleventy plugin (e.g., `eleventy-plugin-rev`)
+     - Bundler (Vite/Rollup) to emit hashed filenames
+     - Custom: generate hash map and reference via data (see outline below)
+   - Minimal custom outline:
+     1. Hash files in `src/assets` to `/assets/`
+     2. Emit map original → hashed (e.g., `_data/assets.json`)
+     3. Use map in `basehead.html` for CSS/JS references
+8) Dependency hygiene
+   - `.npmrc` pins exact versions; commit `package-lock.json`
+   - `.github/dependabot.yml` opens weekly update PRs (on GitHub)
+9) Analytics/consent (optional)
+   - Add scripts in `components/basehead.html` or end of `base.html`
 
 ## Scripts
 - `npm start` — run Eleventy dev server with live reload
@@ -145,3 +159,4 @@ An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts
 ## Notes
 - `package.json` has `"private": true` to avoid accidental npm publishing; repo visibility is independent (GitHub can be public)
 - This is a static template; no server-side code
+
