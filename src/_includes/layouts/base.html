@@ -3,32 +3,35 @@
   <head>
     {% include "components/basehead.html" %}
   </head>
-  <body class="bg-slate-950 text-slate-100 font-sans antialiased">
+  <body class="bg-slate-50 text-slate-900 font-sans antialiased">
     <a class="skip-link" href="#main-content">Skip to content</a>
     <div class="flex min-h-screen flex-col">
-    <header class="border-b border-slate-800 bg-slate-900/40 backdrop-blur-sm">
-      {% include "components/header.html" %}
-    </header>
+      <div class="w-full bg-amber-900 text-amber-50 text-center text-sm py-2 px-3 shadow-sm">
+        This is a fictional company site built for portfolio purposes. No real services are offered.
+      </div>
 
-    {% if contentWrapperClass is defined %}
-      {% set wrapperClass = contentWrapperClass %}
-    {% else %}
-      {% set wrapperClass = "prose prose-invert prose-headings:tracking-tight prose-a:text-sky-400 prose-blockquote:text-slate-200 prose-strong:text-white" %}
-    {% endif %}
-    <main id="main-content" class="mx-auto flex-1 w-full max-w-3xl px-6 py-10">
-      {% if wrapperClass %}
-        <div class="{{ wrapperClass }}">
-          {{ content | safe }}
-        </div>
+      <header class="border-b border-slate-200 bg-white/90 backdrop-blur-sm">
+        {% include "components/header.html" %}
+      </header>
+
+      {% if contentWrapperClass is defined %}
+        {% set wrapperClass = contentWrapperClass %}
       {% else %}
-        {{ content | safe }}
+        {% set wrapperClass = "prose prose-slate max-w-none prose-headings:tracking-tight prose-a:text-blue-700 prose-strong:text-slate-900" %}
       {% endif %}
-    </main>
+      <main id="main-content" class="flex-1 w-full mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-10">
+        {% if wrapperClass %}
+          <div class="{{ wrapperClass }}">
+            {{ content | safe }}
+          </div>
+        {% else %}
+          {{ content | safe }}
+        {% endif %}
+      </main>
 
-    <footer class="border-t border-slate-800 px-6 py-8">
-      {% include "components/footer.html" %}
-    </footer>
+      <footer class="border-t border-slate-200 bg-white px-6 py-8">
+        {% include "components/footer.html" %}
+      </footer>
     </div>
   </body>
-  
 </html>

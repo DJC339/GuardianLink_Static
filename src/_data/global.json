@@ -1,11 +1,11 @@
 {
   "site": {
-    "title": "11ty Modular Template",
-    "description": "A clean Eleventy starter with layouts, components, and organized assets.",
-    "author": "Your Name",
-    "url": "https://example.com",
+    "title": "GuardianLink",
+    "description": "GuardianLink connects non-profits with vetted cybersecurity volunteers to strengthen defenses and protect missions.",
+    "author": "GuardianLink",
+    "url": "https://guardianlink.example.com",
     "language": "en",
-    "twitter": "@yourhandle",
+    "twitter": "@guardianlink",
     "image": "/assets/images/social-share.jpg"
   }
 }

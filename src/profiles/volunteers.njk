@@ -1,0 +1,43 @@
+---
+layout: layouts/base.html
+title: Volunteer Profiles
+contentWrapperClass: ""
+permalink: /profiles/volunteers/
+---
+{% set volunteerProfiles = profiles | where("user_type", 1) %}
+
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <h2 class="text-2xl font-bold mb-4">Volunteer Profiles</h2>
+
+  <div class="search-card mb-6">
+    <form id="search-form" class="flex flex-col sm:flex-row gap-3" role="search">
+      <input id="search-input" type="search" placeholder="Search by name or email" class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-600">
+      <button class="btn-primary w-full sm:w-auto" type="submit">Search</button>
+    </form>
+  </div>
+
+  <div id="profiles-row" class="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
+    {% for profile in volunteerProfiles %}
+      {% set user = users | findUser(profile.user_id) %}
+      {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
+      <div class="profile-card card-surface p-6 flex flex-col items-center text-center gap-2" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
+        <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
+        <h5 class="text-lg font-semibold">{{ user.name }}</h5>
+        <p class="text-slate-600 text-sm">{{ user.email }}</p>
+        <span class="badge-role">{{ user.user_type | userTypeLabel }}</span>
+        <div class="text-sm text-slate-700">
+          {% if profile.availability %}<p><strong>Availability:</strong> {{ profile.availability }}</p>{% endif %}
+          {% if profile.criminal_check is defined %}
+            <p><strong>Criminal Background Check:</strong> {% if profile.criminal_check %}Yes{% else %}No{% endif %}</p>
+          {% endif %}
+        </div>
+        <div class="mt-3 w-full">
+          <a class="btn-secondary w-full justify-center" href="/profiles/{{ profile.id }}/">View Profile</a>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+  <div id="empty-state" class="hidden mt-6 rounded-lg border border-brand-200 bg-brand-50 text-brand-800 px-4 py-3" role="alert">
+    No volunteer profiles available to display.
+  </div>
+</div>

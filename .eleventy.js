@@ -124,6 +124,31 @@ module.exports = function (eleventyConfig) {
     return d.toISOString();
   });
 
+  eleventyConfig.addFilter("findUser", (users, id) => {
+    if (!Array.isArray(users)) return null;
+    return users.find((user) => String(user.id) === String(id)) || null;
+  });
+
+  eleventyConfig.addFilter("userTypeLabel", (type) => {
+    if (type === 1 || type === "1") return "Volunteer";
+    if (type === 0 || type === "0") return "Organization";
+    return "User";
+  });
+
+  eleventyConfig.addFilter("formatDate", (value) => {
+    const d = value instanceof Date ? value : new Date(value);
+    if (isNaN(d)) return "";
+    return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+  });
+
+  eleventyConfig.addFilter("where", (array, key, expected) => {
+    if (!Array.isArray(array)) return [];
+    return array.filter((item) => {
+      const value = item && item[key];
+      return String(value) === String(expected);
+    });
+  });
+
   // Transform: add rel="noopener noreferrer" to external links that open in a new tab
   eleventyConfig.addTransform("secure-external-links", (content, outputPath) => {
     if (outputPath && outputPath.endsWith(".html")) {
@@ -133,7 +158,7 @@ module.exports = function (eleventyConfig) {
   });
 
   return {
-    templateFormats: ["md", "html"],
+    templateFormats: ["md", "html", "njk"],
     markdownTemplateEngine: "njk",
     htmlTemplateEngine: "njk",
     dataTemplateEngine: "njk",

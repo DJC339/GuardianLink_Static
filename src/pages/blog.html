@@ -1,23 +1,49 @@
 ---
 layout: layouts/base.html
-title: Blog
-permalink: /blog/
+title: Events
+permalink: /events/
+contentWrapperClass: ""
 ---
 
-<h1>Blog</h1>
+{% set events = collections.blog or [] %}
 
-{% if collections.blog and collections.blog.length %}
-  <ul>
-    {% for post in collections.blog | reverse %}
-      <li>
-        <a href="{{ post.url }}">{{ post.data.title }}</a>
-        {% if post.date %}
-          <small>— {{ post.date | date('medium') }}</small>
-        {% endif %}
-      </li>
-    {% endfor %}
-  </ul>
-{% else %}
-  <p>No posts yet.</p>
-{% endif %}
+<section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-900 to-brand-700 text-white shadow-lg">
+  <div class="absolute inset-0 opacity-30 pointer-events-none" aria-hidden="true">
+    <div class="h-full w-full bg-[radial-gradient(circle_at_20%_20%,rgba(46,196,182,0.3),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.15),transparent_25%)]"></div>
+  </div>
+  <div class="relative mx-auto flex max-w-5xl flex-col gap-3 px-6 py-12 sm:px-10">
+    <p class="text-xs font-semibold uppercase tracking-[0.35em] text-accent">Events</p>
+    <h1 class="text-3xl sm:text-4xl font-bold">Connect with the GuardianLink community</h1>
+    <p class="text-white/80 max-w-3xl text-base sm:text-lg">
+      Join webinars, workshops, and meetups focused on cyber readiness for NGOs and the volunteers who support them.
+    </p>
+  </div>
+</section>
 
+<section class="mt-10 space-y-6">
+  {% if events.length %}
+    <div class="grid gap-6 md:grid-cols-2">
+      {% for event in events | reverse %}
+        <article class="card-surface p-6 flex flex-col gap-3">
+          <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-brand-700">
+            <span>Event</span>
+            {% if event.date %}<span>{{ event.date | date('medium') }}</span>{% endif %}
+          </div>
+          <h2 class="text-xl font-semibold text-slate-900">
+            <a class="hover:text-brand-800 transition" href="{{ event.url }}">{{ event.data.title }}</a>
+          </h2>
+          {% if event.templateContent %}
+            <p class="text-slate-700 line-clamp-3">{{ event.templateContent | striptags | trim }}</p>
+          {% endif %}
+          <div class="mt-auto flex items-center gap-3">
+            <a class="btn-primary" href="{{ event.url }}">View details</a>
+          </div>
+        </article>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="rounded-xl border border-brand-100 bg-brand-50/60 px-4 py-5 text-brand-900">
+      No events yet—check back soon.
+    </div>
+  {% endif %}
+</section>

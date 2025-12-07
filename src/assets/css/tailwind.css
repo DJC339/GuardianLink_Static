@@ -3,50 +3,118 @@
 @tailwind utilities;
 
 @layer base {
-  :root {
-    color-scheme: dark;
-  }
-
-  html {
-    font-size: clamp(16px, 1.6vw, 18px);
-  }
-
   body {
-    @apply min-h-screen bg-slate-950 text-slate-100 font-sans leading-relaxed antialiased;
+    @apply bg-sand-50 text-slate-900;
+    background-image:
+      radial-gradient(circle at 18% 24%, rgba(46, 196, 182, 0.09), transparent 22%),
+      radial-gradient(circle at 82% 10%, rgba(34, 107, 154, 0.07), transparent 18%),
+      radial-gradient(circle at 50% 78%, rgba(34, 62, 97, 0.08), transparent 20%);
+    background-attachment: fixed;
   }
 
-  a {
-    @apply text-sky-400 transition-colors duration-150;
+  .skip-link {
+    position: absolute;
+    left: -999px;
+    top: auto;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
   }
 
-  a:hover {
-    @apply text-sky-300;
-  }
-
-  a:focus-visible,
-  button:focus-visible {
-    @apply outline-none ring-2 ring-offset-2 ring-offset-slate-900 ring-sky-400;
-  }
-
-  a,
-  button {
-    min-height: 44px;
+  .skip-link:focus {
+    left: 1rem;
+    top: 1rem;
+    width: auto;
+    height: auto;
+    padding: 0.75rem 1rem;
+    @apply rounded-lg bg-white text-slate-900 shadow-lg outline-none;
   }
 }
 
 @layer components {
-  .skip-link {
-    @apply sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:px-4 focus:py-2 focus:bg-slate-900 focus:text-white focus:rounded-md focus:ring-2 focus:ring-sky-400;
+  .nav-link {
+    @apply text-sm font-semibold text-slate-200 transition hover:text-white;
+  }
+
+  .nav-link-active {
+    @apply text-white underline underline-offset-8;
+  }
+
+.hero-overlay {
+  @apply absolute inset-0 flex flex-col justify-center rounded-2xl px-6 sm:px-10;
+  background: linear-gradient(115deg, rgba(27, 49, 76, 0.55), rgba(46, 196, 182, 0.35), rgba(27, 49, 76, 0.45));
+}
+
+  .hero-heading {
+    @apply text-3xl sm:text-4xl font-bold text-white mb-2;
+  }
+
+  .hero-subtitle {
+    @apply text-white/90 max-w-2xl text-base sm:text-lg leading-7;
+  }
+
+  .current-profile-pic {
+    @apply w-32 h-32 object-cover rounded-full border-2 border-slate-200 mx-auto mb-3;
+  }
+
+  .common-profile {
+    @apply max-w-3xl mx-auto mt-8 mb-16 bg-white rounded-xl shadow-lg p-6 text-center;
+  }
+
+  .badge-role {
+    @apply inline-flex items-center px-3 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold uppercase tracking-wide;
+  }
+
+  .card-surface {
+    @apply bg-white rounded-2xl shadow-lg border border-brand-50;
+  }
+
+  .search-card {
+    @apply bg-white rounded-xl border border-slate-200 shadow-sm p-4;
+  }
+
+  .hero-aurora {
+    position: absolute;
+    inset: -10%;
+    background:
+      radial-gradient(circle at 20% 30%, rgba(46, 196, 182, 0.5), transparent 35%),
+      radial-gradient(circle at 80% 20%, rgba(59, 118, 184, 0.35), transparent 32%),
+      radial-gradient(circle at 50% 70%, rgba(34, 62, 97, 0.4), transparent 30%);
+    filter: blur(110px);
+    opacity: 1;
+    mix-blend-mode: screen;
+    z-index: 1;
+    animation: aurora 12s ease-in-out infinite alternate;
+    pointer-events: none;
+  }
+
+  .hero-image {
+    filter: brightness(1.08) saturate(1.05);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
+@layer utilities {
+  .btn-primary {
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-brand-800 to-accent px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(27,49,76,0.25),0_2px_6px_rgba(0,0,0,0.08)] transition hover:shadow-[0_10px_24px_rgba(27,49,76,0.3),0_3px_8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:from-brand-900 hover:to-brand-700;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-brand-800 border border-brand-200 shadow-sm transition hover:border-brand-300 hover:bg-brand-50 hover:-translate-y-0.5;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center rounded-full px-5 py-2.5 text-sm font-semibold text-brand-800 border border-brand-100 bg-white/80 backdrop-blur transition hover:bg-brand-50 hover:-translate-y-0.5;
+  }
+}
+
+@keyframes aurora {
+  0% {
+    transform: translate(-4%, -2%) scale(1);
+  }
+  50% {
+    transform: translate(3%, 2%) scale(1.05);
+  }
+  100% {
+    transform: translate(-2%, 4%) scale(1.02);
   }
 }

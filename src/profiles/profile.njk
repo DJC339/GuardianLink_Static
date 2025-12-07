@@ -1,0 +1,47 @@
+---
+layout: layouts/base.html
+pagination:
+  data: profiles
+  size: 1
+  alias: profile
+permalink: "profiles/{{ profile.id }}/index.html"
+title: "Profile"
+contentWrapperClass: ""
+---
+{% set user = users | findUser(profile.user_id) %}
+{% if not user %}
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+    <div class="rounded-lg border border-amber-200 bg-amber-50 text-amber-800 px-4 py-3" role="alert">Profile not found.</div>
+  </div>
+{% else %}
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="common-profile">
+      <div class="profile-picture text-center mb-3">
+        <img src="/assets/images/placeholder.png" alt="Profile Picture" class="current-profile-pic">
+      </div>
+      <h2 class="text-2xl font-bold">{{ user.name }}</h2>
+      <p><strong>Email:</strong> {{ user.email }}</p>
+      <p><strong>Account Type:</strong> {{ user.user_type | userTypeLabel }}</p>
+      <p><strong>Member since:</strong> {{ user.created_at | formatDate }}</p>
+
+      {% if user.user_type == 1 %}
+        {% if profile.availability %}<p><strong>Availability:</strong> {{ profile.availability }}</p>{% endif %}
+        <p><strong>Criminal Background Check Available:</strong>
+          {% if profile.criminal_check %}Yes{% else %}No{% endif %}
+        </p>
+        {% if profile.resume %}
+          <div class="mt-3">
+            <a class="btn-primary" target="_blank" rel="noopener" href="{{ profile.resume }}">Resume</a>
+          </div>
+        {% endif %}
+      {% elseif user.user_type == 0 %}
+        {% if profile.organization_name %}<p><strong>Organization:</strong> {{ profile.organization_name }}</p>{% endif %}
+        {% if profile.concern %}<p><strong>Areas of Concern:</strong> {{ profile.concern }}</p>{% endif %}
+      {% endif %}
+
+      <div class="profile-actions mt-3 text-center flex justify-center">
+        <a class="btn-secondary" href="/profiles/">Back to Browse</a>
+      </div>
+    </div>
+  </div>
+{% endif %}
