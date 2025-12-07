@@ -1,167 +1,93 @@
-# 11ty Modular Template
+# GuardianLink Static Site (Eleventy + Tailwind)
 
-An opinionated Eleventy (11ty) starter with a simple, modular structure: layouts, components, global data, security defaults, and Netlify-friendly configuration.
+A modern, mobile‑first static site that connects cyber volunteers with NGOs. Built on Eleventy 2.x with TailwindCSS and a small set of custom filters/utilities for profiles, events, and marketing pages.
 
-## Features
-- Eleventy 2.x with HTML + Markdown templates using Nunjucks tags
-- Modular includes: base layout, header, footer, partials
-- Global data (`src/_data`) for site metadata and navigation
-- Blog collection via Markdown files under `src/blog/`
-- Internationalized date filter using `Intl.DateTimeFormat`
-- Pages under `src/pages/` with clean permalinks
-- 404 page (`/404.html`)
-- SEO: canonical URLs, Open Graph + Twitter Card tags, sitemap.xml, robots.txt
-- Images: responsive `<picture>` via `{% img %}` shortcode, Markdown images lazy/async
-- Tailwind CSS 3 + Autoprefixer with dedicated dev/build scripts (typography plugin included)
-- Netlify config (`netlify.toml`) with cache and strong security headers
-- External link hardening (`rel="noopener noreferrer"` for `target="_blank"`)
+## What’s Included
+- **Eleventy** with Nunjucks templates, custom filters (`date`, `absoluteUrl`, `w3cDate`, `findUser`, `userTypeLabel`, `formatDate`, `where`).
+- **TailwindCSS** theme with brand palette, gradient CTAs, animated hero aurora, and custom buttons/cards.
+- **Layouts & components**: single base layout, head, header (CTA cluster), footer (social icons shown but disabled links), post layout.
+- **Pages**: home (`/`), events (`/events/`), resources (`/resources/`), profiles (list + volunteer `/profiles/volunteers/` and NGO `/profiles/ngos/` splits), contact + thank-you, about, 404, sitemap, robots.
+- **Profiles**: individual pages via `src/profiles/profile.njk` plus filtered lists; supporting data in `_data/users.json` and `_data/profiles.json`.
+- **Assets**: logo swaps, Code Forged Digital credit, social icons (non-clickable), hero imagery with aurora effect.
+- **Build pipeline**: Tailwind compiled to `src/assets/css/main.css` (ignored in git), Eleventy outputs to `_site/`.
 
-## Project Structure
-```text
-/
-|-- .eleventy.js               # Eleventy configuration (engines, filters, shortcodes, transforms)
-|-- netlify.toml               # Netlify build, headers (cache + security)
-|-- package.json               # Scripts + dev dependencies
-|-- package-lock.json
-|-- .npmrc                     # Pin exact versions
-|-- .github/dependabot.yml     # Weekly dependency PRs (GitHub)
-|-- tailwind.config.js         # Tailwind theme + content paths
-|-- postcss.config.js          # Tailwind + Autoprefixer
-|-- src/
-|   |-- _data/
-|   |   |-- global.json        # Site title/description/author/url/language/twitter/image
-|   |   |-- navigation.js      # Header nav links
-|   |-- _includes/
-|   |   |-- layouts/
-|   |   |   |-- base.html      # Base layout shell
-|   |   |   |-- post.html      # Blog post layout
-|   |   |-- components/
-|   |   |   |-- basehead.html  # <head> content + SEO
-|   |   |   |-- header.html    # Site header + nav
-|   |   |   |-- footer.html    # Site footer
-|   |   |-- partials/
-|   |       |-- social-links.html
-|   |-- assets/
-|   |   |-- css/
-|   |   |   |-- tailwind.css   # Source (includes @tailwind directives + custom layers)
-|   |   |   |-- main.css       # Generated output (copied to /assets/css/main.css)
-|   |   |-- js/
-|   |   |-- images/
-|   |-- blog/
-|   |   |-- post-1.md
-|   |   |-- post-2.md
-|   |-- pages/
-|       |-- index.html         # /
-|       |-- about.html         # /about/
-|       |-- contact.html       # /contact/
-|       |-- services.html      # /services/
-|       |-- blog.html          # /blog/ (list of posts)
-|       |-- 404.html           # /404.html
-|       |-- robots.txt         # /robots.txt
-|       |-- sitemap.xml.html   # /sitemap.xml
-|-- .gitignore
+## Project Structure (current)
 ```
-## Getting Started
-- Install: `npm install`
-- Develop: `npm start` (or `npm run dev`) - runs Eleventy serve alongside the Tailwind watcher
-- Build: `npm run build` - runs `build:css` before Eleventy and outputs to `_site/`
-- CSS only: `npm run dev:css` (watch) or `npm run build:css` (single build)
-## Eleventy Configuration Highlights (`.eleventy.js`)
-- Template engines: `htmlTemplateEngine: 'njk'`, `markdownTemplateEngine: 'njk'`
-- Directories: `input: 'src'`, `includes: '_includes'`, `data: '_data'`, `output: '_site'`
-- Passthrough: copies `src/assets` to `/assets`
-- Date filter: `date(value, localeOrFormat = 'auto', styleOrOptions)`
-  - Uses `Intl.DateTimeFormat` by default
-  - Back-compat tokens: `yyyy-LL-dd`, `yyyy-LL`, `LL/dd/yyyy`
-  - Examples:
-    - `{{ date | date() }}` → system locale, medium date
-    - `{{ date | date('en-GB','long') }}` → en-GB, long date
-    - `{{ date | date('en-US', { dateStyle: 'medium', timeStyle: 'short' }) }}`
-- Responsive images: `{% img src, alt, sizes %}`
-  - Emits AVIF/WebP/JPEG at multiple widths with lazy-loading and async decoding
-  - Example: `{% img '/assets/images/example.jpg', 'Alt text', '(min-width: 768px) 720px, 100vw' %}`
-- Markdown images: automatically get `loading="lazy" decoding="async"`
-- Security transform: adds `rel="noopener noreferrer"` to links with `target="_blank"`
-- Filters: `absoluteUrl(path, base)`, `w3cDate(value)` used by SEO and sitemap
+.
+├─ .eleventy.js
+├─ tailwind.config.js
+├─ postcss.config.js
+├─ netlify.toml
+├─ src/
+│  ├─ _data/
+│  │  ├─ site.json            # primary site metadata (title/description/url/etc)
+│  │  ├─ global.json          # mirrors site metadata
+│  │  ├─ navigation.js        # (currently empty; header CTAs are hardcoded)
+│  │  ├─ users.json           # user records for profiles
+│  │  └─ profiles.json        # profile records (referencing users)
+│  ├─ _includes/
+│  │  ├─ layouts/base.html
+│  │  ├─ layouts/post.html
+│  │  ├─ components/basehead.html
+│  │  ├─ components/header.html
+│  │  └─ components/footer.html
+│  ├─ assets/
+│  │  ├─ css/tailwind.css     # Tailwind source + custom layers
+│  │  ├─ css/main.css         # built output (gitignored)
+│  │  └─ images/              # logos, hero, placeholders
+│  ├─ blog/                   # event entries (reuse blog collection)
+│  │  ├─ post-1.md
+│  │  └─ post-2.md
+│  ├─ pages/
+│  │  ├─ index.njk            # homepage
+│  │  ├─ blog.html            # /events/
+│  │  ├─ resources.html       # /resources/
+│  │  ├─ contact.html         # /contact/
+│  │  ├─ contact-thank-you.html
+│  │  ├─ about.html
+│  │  ├─ 404.html
+│  │  ├─ robots.txt
+│  │  └─ sitemap.xml.html
+│  └─ profiles/
+│     ├─ index.njk            # legacy list (mixed)
+│     ├─ volunteers.njk       # /profiles/volunteers/
+│     ├─ ngos.njk             # /profiles/ngos/
+│     └─ profile.njk          # individual profiles
+└─ package.json
+```
 
-## SEO
-- Base head (`components/basehead.html`) includes:
-  - Title and description (page front matter overrides global)
-  - Canonical URL
-  - Open Graph: site_name, title, description, url, type (article for blog), image
-  - Twitter Card: `summary_large_image`, site handle, title, description, image
-- Global settings in `src/_data/global.json`:
-  - `title`, `description`, `author`, `url`, `language`, `twitter`, `image`
-- Extras:
-  - `src/pages/sitemap.xml.html` → `/sitemap.xml`
-  - `src/pages/robots.txt` → `/robots.txt` with sitemap pointer
+## Running the Site
+- Install deps: `npm install`
+- Dev (serve + watch): `npm run dev` or `npm start`
+- Build: `npm run build` (runs Tailwind build then Eleventy to `_site/`)
+- CSS only: `npm run dev:css` (watch) or `npm run build:css`
 
-## Accessibility & Responsive Defaults
-- Skip link to `#main-content` and focus-visible styles
-- Fluid typography and responsive spacing
-- Nav wraps on small screens
-- Reduced-motion preferences enforced in `src/assets/css/tailwind.css`
+## Content & Data
+- **Metadata**: update `src/_data/site.json` (and optionally `global.json`) for title/description/url/twitter/image.
+- **Profiles**: edit `src/_data/users.json` and `src/_data/profiles.json` (IDs align via `user_id`). Volunteer list filters `user_type == 1`; NGO list filters `user_type == 0`.
+- **Events**: add/edit Markdown in `src/blog/` (collection reused for events). Each entry uses `layout: layouts/post.html`.
+- **Resources**: edit `src/pages/resources.html`.
+- **CTA labels/links**: header CTAs and hero buttons are in `header.html` and `index.njk`.
+- **Footer**: social icons are displayed but intentionally disabled (no outbound links); Code Forged Digital credit links out.
 
-## Netlify
-- `netlify.toml` sets:
-  - Build command: `npm run build`
-  - Publish dir: `_site`
-  - Node version: `18`
-  - Cache headers:
-    - `/assets/*`: `public, max-age=31536000, immutable`
-    - `/*`: `public, max-age=0, must-revalidate`
-  - Security headers:
-    - CSP (default-src 'self'; images allow https and data; no plugins; frame-ancestors self; upgrade-insecure-requests)
-    - Referrer-Policy, X-Content-Type-Options, X-Frame-Options, Permissions-Policy, COOP/CORP, HSTS
+## Styling Highlights
+- Brand palette (navy/teal/sand) in `tailwind.config.js`.
+- Custom utilities: gradient CTAs with 3D shadow, ghost/secondary buttons, animated `hero-aurora`, hero overlay gradient, card/search styles, badges.
+- Hero image boosted brightness/saturation to reveal background; aurora animation layered above.
 
-## Using This as a Template
-- On GitHub, enable “Template repository” and click “Use this template”
-- Or use degit:
-  - `npx degit <your-username>/11ty-modular-template my-new-site`
-  - `cd my-new-site && npm install && npm start`
+## Accessibility & Defaults
+- Skip link, focus-visible friendly defaults.
+- Lazy/async images via Markdown transform.
+- External link hardening for `target="_blank"`.
+- Typography: Inter loaded via Google Fonts.
 
-## Things To Do After Cloning
-1) Update site metadata
-   - `src/_data/global.json` — title, description, author, url, language, twitter, image
-2) Tweak navigation
-   - `src/_data/navigation.js` — add/remove links (e.g., Contact)
-3) Branding and SEO
-  - Update tokens/utilities inside `src/assets/css/tailwind.css` (or extend `tailwind.config.js`)
-   - Add favicons and social image to `src/assets/images`
-   - Adjust OG/Twitter tags in `components/basehead.html` as needed
-4) Social links
-   - Edit `src/_includes/partials/social-links.html`
-5) Content
-   - Replace pages in `src/pages/`
-   - Replace or remove sample posts in `src/blog/`
-6) Netlify
-   - Connect repo, configure custom domain, HTTPS
-   - Adjust cache headers or CSP in `netlify.toml` if you add external assets/scripts
-7) Asset hashing (recommended for production)
-   - With long cache headers on `/assets/*`, add hashing to avoid stale files
-   - Options:
-     - Eleventy plugin (e.g., `eleventy-plugin-rev`)
-     - Bundler (Vite/Rollup) to emit hashed filenames
-     - Custom: generate hash map and reference via data (see outline below)
-   - Minimal custom outline:
-     1. Hash files in `src/assets` to `/assets/`
-     2. Emit map original → hashed (e.g., `_data/assets.json`)
-     3. Use map in `basehead.html` for CSS/JS references
-8) Dependency hygiene
-   - `.npmrc` pins exact versions; commit `package-lock.json`
-   - `.github/dependabot.yml` opens weekly update PRs (on GitHub)
-9) Analytics/consent (optional)
-   - Add scripts in `components/basehead.html` or end of `base.html`
+## Build/Deploy Notes
+- Output: `_site/` (gitignored).
+- Tailwind output: `src/assets/css/main.css` (gitignored).
+- Netlify config present; adjust if deploying elsewhere.
 
-## Scripts
-- `npm start` / `npm run dev` - run Eleventy serve + Tailwind watch in parallel
-- `npm run dev:eleventy` - Eleventy dev server only
-- `npm run dev:css` - Tailwind watcher only
-- `npm run build` - build CSS then run Eleventy (outputs `_site/`)
-- `npm run build:css` - single Tailwind build (minified)
-## Notes
-- `package.json` has `"private": true` to avoid accidental npm publishing; repo visibility is independent (GitHub can be public)
-- This is a static template; no server-side code
-
-
-
+## TODO Ideas
+- Add real social URLs and enable buttons when ready.
+- Add event images/metadata and refine event template.
+- Replace placeholder profile images and copy.
+- Extend navigation data if you reintroduce nav links. 
