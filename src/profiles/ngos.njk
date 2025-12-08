@@ -4,38 +4,130 @@ title: NGO Profiles
 contentWrapperClass: ""
 permalink: /profiles/ngos/
 ---
-{% set ngoProfiles = profiles | where("user_type", 0) %}
+{% import "components/gradient-search-header.njk" as ui %}
+{% set ngoProfiles = profiles | filterByType(0) %}
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h2 class="text-2xl font-bold mb-4">NGO Profiles</h2>
+<!-- NGO directory with search + carousel -->
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+  {{ ui.gradientSearchHeader(
+    "Organizations",
+    "NGO Profiles",
+    "Explore NGOs seeking cyber support and connect to the mission that fits your skills.",
+    "search-form",
+    "search-input",
+    "Search by name or email"
+  ) }}
 
-  <div class="search-card mb-6">
-    <form id="search-form" class="flex flex-col sm:flex-row gap-3" role="search">
-      <input id="search-input" type="search" placeholder="Search by name or email" class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-600">
-      <button class="btn-primary w-full sm:w-auto" type="submit">Search</button>
-    </form>
-  </div>
+  <div class="relative">
+    <div class="pointer-events-none absolute inset-y-6 left-0 w-10 bg-gradient-to-r from-brand-50/80 to-transparent rounded-l-2xl"></div>
+    <div class="pointer-events-none absolute inset-y-6 right-0 w-10 bg-gradient-to-l from-brand-50/80 to-transparent rounded-r-2xl"></div>
 
-  <div id="profiles-row" class="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
-    {% for profile in ngoProfiles %}
-      {% set user = users | findUser(profile.user_id) %}
-      {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
-      <div class="profile-card card-surface p-6 flex flex-col items-center text-center gap-2" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
-        <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
-        <h5 class="text-lg font-semibold">{{ user.name }}</h5>
-        <p class="text-slate-600 text-sm">{{ user.email }}</p>
-        <span class="badge-role">{{ user.user_type | userTypeLabel }}</span>
-        <div class="text-sm text-slate-700">
-          {% if profile.organization_name %}<p><strong>Organization:</strong> {{ profile.organization_name }}</p>{% endif %}
-          {% if profile.concern %}<p><strong>Areas of Concern:</strong> {{ profile.concern }}</p>{% endif %}
-        </div>
-        <div class="mt-3 w-full">
-          <a class="btn-secondary w-full justify-center" href="/profiles/{{ profile.id }}/">View Profile</a>
-        </div>
+    <p class="text-sm text-slate-600 mb-2 sm:hidden">Swipe to browse</p>
+
+    <div class="flex items-center gap-3">
+      <button id="prev-btn" type="button" class="hidden sm:inline-flex btn-primary !px-4">Prev</button>
+      <div id="carousel" class="relative flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar w-full">
+        {% for profile in ngoProfiles %}
+          {% set user = users | findUser(profile.user_id) %}
+          {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
+          <article class="ngo-card card-surface w-[88vw] sm:w-80 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
+            <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
+            <h5 class="text-lg font-semibold">{{ user.name }}</h5>
+            <p class="text-slate-600 text-sm">{{ user.email }}</p>
+            <span class="badge-role">{{ profile.organization_name or "Non-profit" }}</span>
+            <div class="text-sm text-slate-700">
+              {% if profile.concern %}<p><strong>Priority:</strong> {{ profile.concern }}</p>{% endif %}
+              {% if profile.availability %}<p><strong>Engagement:</strong> {{ profile.availability }}</p>{% endif %}
+            </div>
+            <div class="mt-3 w-full">
+              <a class="btn-secondary w-full justify-center" href="/profiles/{{ profile.id }}/">View Profile</a>
+            </div>
+          </article>
+        {% endfor %}
       </div>
-    {% endfor %}
+      <button id="next-btn" type="button" class="hidden sm:inline-flex btn-primary !px-4">Next</button>
+    </div>
   </div>
+
   <div id="empty-state" class="hidden mt-6 rounded-lg border border-brand-200 bg-brand-50 text-brand-800 px-4 py-3" role="alert">
     No NGO profiles available to display.
   </div>
 </div>
+
+<script>
+  (function () {
+    const carousel = document.getElementById('carousel');
+    const prev = document.getElementById('prev-btn');
+    const next = document.getElementById('next-btn');
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('search-input');
+    const emptyState = document.getElementById('empty-state');
+
+    if (!carousel) return;
+
+    const cards = Array.from(carousel.querySelectorAll('.ngo-card'));
+    if (cards.length === 0) {
+      if (emptyState) emptyState.classList.remove('hidden');
+      return;
+    }
+
+    const highlightClosest = () => {
+      const trackRect = carousel.getBoundingClientRect();
+      const centerX = trackRect.left + trackRect.width / 2;
+      let closest = null;
+      let closestDist = Number.MAX_VALUE;
+      cards.forEach((card) => {
+        const rect = card.getBoundingClientRect();
+        const cardCenter = rect.left + rect.width / 2;
+        const dist = Math.abs(centerX - cardCenter);
+        if (dist < closestDist) {
+          closest = card;
+          closestDist = dist;
+        }
+      });
+      cards.forEach((card) => card.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white'));
+      if (closest) {
+        closest.classList.add('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white');
+      }
+    };
+
+    highlightClosest();
+    carousel.addEventListener('scroll', () => {
+      window.requestAnimationFrame(highlightClosest);
+    });
+
+    const scrollByAmount = () => {
+      const card = cards[0];
+      const amount = card ? card.getBoundingClientRect().width + 24 : 240;
+      return amount;
+    };
+
+    prev?.addEventListener('click', () => {
+      carousel.scrollBy({ left: -scrollByAmount(), behavior: 'smooth' });
+    });
+    next?.addEventListener('click', () => {
+      carousel.scrollBy({ left: scrollByAmount(), behavior: 'smooth' });
+    });
+
+    if (searchForm && searchInput) {
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const term = searchInput.value.trim().toLowerCase();
+        if (!term) {
+          carousel.scrollTo({ left: 0, behavior: 'smooth' });
+          return;
+        }
+        const match = cards.find((card) => {
+          const name = card.dataset.name || '';
+          const email = card.dataset.email || '';
+          return name.includes(term) || email.includes(term);
+        });
+        if (match) {
+          match.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          cards.forEach((card) => card.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white'));
+          match.classList.add('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white');
+        }
+      });
+    }
+  })();
+</script>

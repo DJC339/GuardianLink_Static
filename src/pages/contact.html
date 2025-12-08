@@ -4,11 +4,14 @@ title: Contact Us
 permalink: /contact/
 contentWrapperClass: ""
 ---
+<!-- Contact form (static submit redirects home) -->
 <section class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-4">
-  <h1 class="text-3xl font-bold">Contact Us</h1>
-  <p class="text-slate-700">Reach out with questions or partnership inquiries. We’ll get back to you shortly.</p>
+  <div class="rounded-2xl bg-gradient-to-br from-brand-900 to-brand-700 text-white shadow-lg p-6 sm:p-8 space-y-2">
+    <h1 class="text-3xl font-bold text-white">Contact Us</h1>
+    <p class="text-white/80">Reach out with questions or partnership inquiries. We’ll get back to you shortly.</p>
+  </div>
 
-  <form class="space-y-4" aria-label="Contact form">
+  <form class="space-y-4" aria-label="Contact form" action="/" method="get">
     <div class="flex flex-col gap-2">
       <label class="text-sm font-semibold text-slate-800" for="name">Name</label>
       <input id="name" name="name" type="text" required class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-600">

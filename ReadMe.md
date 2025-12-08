@@ -1,17 +1,17 @@
 # GuardianLink Static Site (Eleventy + Tailwind)
 
-A modern, mobile‑first static site that connects cyber volunteers with NGOs. Built on Eleventy 2.x with TailwindCSS and a small set of custom filters/utilities for profiles, events, and marketing pages.
+A modern, mobile-first static site that connects cyber volunteers with NGOs. Built on Eleventy 2.x with TailwindCSS and custom filters/utilities for profiles, events, and marketing pages. Refactored as a capstone project from the Coding for Veterans Secure Software Development Program.
 
 ## What’s Included
-- **Eleventy** with Nunjucks templates, custom filters (`date`, `absoluteUrl`, `w3cDate`, `findUser`, `userTypeLabel`, `formatDate`, `where`).
+- **Eleventy** with Nunjucks templates and custom filters (`date`, `absoluteUrl`, `w3cDate`, `findUser`, `userTypeLabel`, `formatDate`, `where`, `filterByType`).
 - **TailwindCSS** theme with brand palette, gradient CTAs, animated hero aurora, and custom buttons/cards.
-- **Layouts & components**: single base layout, head, header (CTA cluster), footer (social icons shown but disabled links), post layout.
-- **Pages**: home (`/`), events (`/events/`), resources (`/resources/`), profiles (list + volunteer `/profiles/volunteers/` and NGO `/profiles/ngos/` splits), contact + thank-you, about, 404, sitemap, robots.
-- **Profiles**: individual pages via `src/profiles/profile.njk` plus filtered lists; supporting data in `_data/users.json` and `_data/profiles.json`.
-- **Assets**: logo swaps, Code Forged Digital credit, social icons (non-clickable), hero imagery with aurora effect.
-- **Build pipeline**: Tailwind compiled to `src/assets/css/main.css` (ignored in git), Eleventy outputs to `_site/`.
+- **Layouts & components**: base layout, head, header (CTA cluster with Home/Contact/Resources/Events), footer (social icons shown but disabled), post layout, reusable gradient + search header macro.
+- **Pages**: home (`/`), events (`/events/` with calendar, upcoming, archive), resources (`/resources/` table), profiles split (volunteers `/profiles/volunteers/` with modal detail, NGOs `/profiles/ngos/` carousel), contact + thank-you, about, 404, sitemap, robots.
+- **Profiles**: individual pages via `src/profiles/profile.njk` plus filtered lists; data in `_data/users.json` and `_data/profiles.json`.
+- **Assets**: GuardianLink/Code Forged branding, social icons (non-clickable), hero imagery with aurora effect.
+- **Build pipeline**: Tailwind compiled to `src/assets/css/main.css` (gitignored), Eleventy outputs to `_site/`.
 
-## Project Structure (current)
+## Project Structure
 ```
 .
 ├─ .eleventy.js
@@ -20,9 +20,9 @@ A modern, mobile‑first static site that connects cyber volunteers with NGOs. B
 ├─ netlify.toml
 ├─ src/
 │  ├─ _data/
-│  │  ├─ site.json            # primary site metadata (title/description/url/etc)
+│  │  ├─ site.json            # primary site metadata
 │  │  ├─ global.json          # mirrors site metadata
-│  │  ├─ navigation.js        # (currently empty; header CTAs are hardcoded)
+│  │  ├─ navigation.js        # currently empty; header CTAs are hardcoded
 │  │  ├─ users.json           # user records for profiles
 │  │  └─ profiles.json        # profile records (referencing users)
 │  ├─ _includes/
@@ -30,17 +30,19 @@ A modern, mobile‑first static site that connects cyber volunteers with NGOs. B
 │  │  ├─ layouts/post.html
 │  │  ├─ components/basehead.html
 │  │  ├─ components/header.html
-│  │  └─ components/footer.html
+│  │  ├─ components/footer.html
+│  │  └─ components/gradient-search-header.njk
 │  ├─ assets/
 │  │  ├─ css/tailwind.css     # Tailwind source + custom layers
 │  │  ├─ css/main.css         # built output (gitignored)
 │  │  └─ images/              # logos, hero, placeholders
-│  ├─ blog/                   # event entries (reuse blog collection)
+│  ├─ blog/                   # event entries (reusing blog collection)
 │  │  ├─ post-1.md
-│  │  └─ post-2.md
+│  │  ├─ post-2.md
+│  │  └─ december-event.md    # sample current-month event
 │  ├─ pages/
 │  │  ├─ index.njk            # homepage
-│  │  ├─ blog.html            # /events/
+│  │  ├─ events.njk           # /events/ (calendar + lists)
 │  │  ├─ resources.html       # /resources/
 │  │  ├─ contact.html         # /contact/
 │  │  ├─ contact-thank-you.html
@@ -49,7 +51,6 @@ A modern, mobile‑first static site that connects cyber volunteers with NGOs. B
 │  │  ├─ robots.txt
 │  │  └─ sitemap.xml.html
 │  └─ profiles/
-│     ├─ index.njk            # legacy list (mixed)
 │     ├─ volunteers.njk       # /profiles/volunteers/
 │     ├─ ngos.njk             # /profiles/ngos/
 │     └─ profile.njk          # individual profiles
@@ -65,10 +66,10 @@ A modern, mobile‑first static site that connects cyber volunteers with NGOs. B
 ## Content & Data
 - **Metadata**: update `src/_data/site.json` (and optionally `global.json`) for title/description/url/twitter/image.
 - **Profiles**: edit `src/_data/users.json` and `src/_data/profiles.json` (IDs align via `user_id`). Volunteer list filters `user_type == 1`; NGO list filters `user_type == 0`.
-- **Events**: add/edit Markdown in `src/blog/` (collection reused for events). Each entry uses `layout: layouts/post.html`.
-- **Resources**: edit `src/pages/resources.html`.
+- **Events**: add/edit Markdown in `src/blog/` (collection reused for events). Each entry uses `layout: layouts/post.html` and feeds the calendar/upcoming/archive on `/events/`.
+- **Resources**: edit `src/pages/resources.html` (table rows).
 - **CTA labels/links**: header CTAs and hero buttons are in `header.html` and `index.njk`.
-- **Footer**: social icons are displayed but intentionally disabled (no outbound links); Code Forged Digital credit links out.
+- **Footer**: social icons are displayed but intentionally disabled; Code Forged Digital credit links out.
 
 ## Styling Highlights
 - Brand palette (navy/teal/sand) in `tailwind.config.js`.
@@ -88,6 +89,6 @@ A modern, mobile‑first static site that connects cyber volunteers with NGOs. B
 
 ## TODO Ideas
 - Add real social URLs and enable buttons when ready.
-- Add event images/metadata and refine event template.
+- Add event images/metadata for richer cards.
 - Replace placeholder profile images and copy.
-- Extend navigation data if you reintroduce nav links. 
+- Move header CTAs into `navigation.js` if you want data-driven nav.

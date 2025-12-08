@@ -40,7 +40,13 @@ contentWrapperClass: ""
       {% endif %}
 
       <div class="profile-actions mt-3 text-center flex justify-center">
-        <a class="btn-secondary" href="/profiles/">Back to Browse</a>
+        {% if user.user_type == 1 %}
+          <a class="btn-secondary" href="/profiles/volunteers/">Back to Browse</a>
+        {% elseif user.user_type == 0 %}
+          <a class="btn-secondary" href="/profiles/ngos/">Back to Browse</a>
+        {% else %}
+          <a class="btn-secondary" href="/profiles/">Back to Browse</a>
+        {% endif %}
       </div>
     </div>
   </div>

@@ -135,6 +135,12 @@ module.exports = function (eleventyConfig) {
     return "User";
   });
 
+  eleventyConfig.addFilter("filterByType", (arr, type) => {
+    if (!Array.isArray(arr)) return [];
+    const target = String(type);
+    return arr.filter((item) => String(item.user_type) === target);
+  });
+
   eleventyConfig.addFilter("formatDate", (value) => {
     const d = value instanceof Date ? value : new Date(value);
     if (isNaN(d)) return "";

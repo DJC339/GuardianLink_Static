@@ -4,27 +4,41 @@ title: Volunteer Profiles
 contentWrapperClass: ""
 permalink: /profiles/volunteers/
 ---
+{% import "components/gradient-search-header.njk" as ui %}
 {% set volunteerProfiles = profiles | where("user_type", 1) %}
 
-<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <h2 class="text-2xl font-bold mb-4">Volunteer Profiles</h2>
+<!-- Volunteer directory with search + modal details -->
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+  {{ ui.gradientSearchHeader(
+    "Volunteers",
+    "Volunteer Profiles",
+    "Browse our vetted cyber volunteers and connect with the right expertise for your NGO.",
+    "search-form",
+    "search-input",
+    "Search by name, email, or specialty"
+  ) }}
 
-  <div class="search-card mb-6">
-    <form id="search-form" class="flex flex-col sm:flex-row gap-3" role="search">
-      <input id="search-input" type="search" placeholder="Search by name or email" class="w-full rounded-lg border border-slate-300 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-brand-600">
-      <button class="btn-primary w-full sm:w-auto" type="submit">Search</button>
-    </form>
-  </div>
-
-  <div id="profiles-row" class="grid md:grid-cols-3 sm:grid-cols-2 gap-6">
+  <div id="carousel" class="flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
     {% for profile in volunteerProfiles %}
       {% set user = users | findUser(profile.user_id) %}
       {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
-      <div class="profile-card card-surface p-6 flex flex-col items-center text-center gap-2" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
+      {% set specialty = profile.concern or "Cybersecurity volunteer" %}
+      <article class="profile-card card-surface w-72 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300"
+        data-name="{{ user.name }}"
+        data-name-lower="{{ user.name | lower }}"
+        data-email="{{ user.email }}"
+        data-email-lower="{{ user.email | lower }}"
+        data-specialty="{{ specialty }}"
+        data-specialty-lower="{{ specialty | lower }}"
+        data-availability="{{ profile.availability or '' }}"
+        data-criminal="{% if profile.criminal_check %}Yes{% else %}No{% endif %}"
+        data-img="{{ imgSrc }}"
+        data-id="{{ profile.id }}"
+      >
         <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
         <h5 class="text-lg font-semibold">{{ user.name }}</h5>
         <p class="text-slate-600 text-sm">{{ user.email }}</p>
-        <span class="badge-role">{{ user.user_type | userTypeLabel }}</span>
+        <span class="badge-role">{{ specialty }}</span>
         <div class="text-sm text-slate-700">
           {% if profile.availability %}<p><strong>Availability:</strong> {{ profile.availability }}</p>{% endif %}
           {% if profile.criminal_check is defined %}
@@ -32,12 +46,145 @@ permalink: /profiles/volunteers/
           {% endif %}
         </div>
         <div class="mt-3 w-full">
-          <a class="btn-secondary w-full justify-center" href="/profiles/{{ profile.id }}/">View Profile</a>
+          <button class="btn-secondary w-full justify-center view-profile-btn" type="button">View Profile</button>
         </div>
-      </div>
+      </article>
     {% endfor %}
   </div>
-  <div id="empty-state" class="hidden mt-6 rounded-lg border border-brand-200 bg-brand-50 text-brand-800 px-4 py-3" role="alert">
+
+  <div id="empty-state" class="hidden rounded-lg border border-brand-200 bg-brand-50/60 text-brand-900 px-4 py-3" role="alert">
     No volunteer profiles available to display.
   </div>
+
+  <div id="modal" class="fixed inset-0 z-40 hidden items-center justify-center px-4">
+    <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
+    <div class="relative z-10 w-full max-w-xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-slate-500">Volunteer Profile</p>
+          <h3 id="modal-name" class="text-xl font-semibold text-slate-900"></h3>
+        </div>
+        <button id="modal-close" type="button" class="btn-ghost px-3">Close</button>
+      </div>
+      <div class="p-6 space-y-4">
+        <div class="flex items-center gap-4">
+          <img id="modal-img" class="w-20 h-20 rounded-xl object-cover border border-slate-200 shadow-sm" alt="Profile photo">
+          <div class="space-y-1">
+            <p id="modal-email" class="text-slate-700 text-sm"></p>
+            <span id="modal-specialty" class="badge-role"></span>
+          </div>
+        </div>
+        <div class="grid sm:grid-cols-2 gap-3 text-sm text-slate-800">
+          <p><strong>Availability:</strong> <span id="modal-availability"></span></p>
+          <p><strong>Background Check:</strong> <span id="modal-criminal"></span></p>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
+<script>
+  (function () {
+    const carousel = document.getElementById('carousel');
+    const searchForm = document.getElementById('search-form');
+    const searchInput = document.getElementById('search-input');
+    const emptyState = document.getElementById('empty-state');
+
+    if (!carousel) return;
+
+    let cards = Array.from(carousel.querySelectorAll('[data-name]'));
+
+    if (cards.length === 0) {
+      if (emptyState) emptyState.classList.remove('hidden');
+      return;
+    }
+
+    // Clone cards to ensure at least 10 in the carousel for a fuller experience
+    if (cards.length < 10) {
+      for (let i = cards.length; i < 10; i++) {
+        const clone = cards[i % cards.length].cloneNode(true);
+        carousel.appendChild(clone);
+      }
+      cards = Array.from(carousel.querySelectorAll('[data-name]'));
+    }
+
+    if (searchForm && searchInput) {
+      searchForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const term = searchInput.value.trim().toLowerCase();
+        if (!term) {
+          carousel.scrollTo({ left: 0, behavior: 'smooth' });
+          return;
+        }
+
+        const match = cards.find((card) => {
+          const name = (card.dataset.nameLower || '').toLowerCase();
+          const email = (card.dataset.emailLower || '').toLowerCase();
+          const specialty = (card.dataset.specialtyLower || '').toLowerCase();
+          return name.includes(term) || email.includes(term) || specialty.includes(term);
+        });
+
+        if (match) {
+          cards.forEach((card) => {
+            card.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105');
+          });
+
+          match.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+          match.classList.add('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105');
+
+          // Remove highlight after a brief pause to avoid lingering state
+          setTimeout(() => {
+            match.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105');
+          }, 3500);
+        }
+      });
+    }
+
+    // Pop-out modal
+    const modal = document.getElementById('modal');
+    const modalBackdrop = document.getElementById('modal-backdrop');
+    const modalClose = document.getElementById('modal-close');
+    const modalName = document.getElementById('modal-name');
+    const modalEmail = document.getElementById('modal-email');
+    const modalSpecialty = document.getElementById('modal-specialty');
+    const modalAvailability = document.getElementById('modal-availability');
+    const modalCriminal = document.getElementById('modal-criminal');
+    const modalImg = document.getElementById('modal-img');
+
+    const closeModal = () => {
+      modal.classList.add('hidden');
+      document.body.classList.remove('overflow-hidden');
+    };
+
+    const openModal = (card) => {
+      if (!card) return;
+      modalName.textContent = card.dataset.name || '';
+      modalEmail.textContent = card.dataset.email || '';
+      modalSpecialty.textContent = card.dataset.specialty || '';
+      modalAvailability.textContent = card.dataset.availability || 'Not specified';
+      modalCriminal.textContent = card.dataset.criminal || 'Unknown';
+      modalImg.src = card.dataset.img || '/assets/images/placeholder.png';
+      modalImg.alt = `${card.dataset.name || 'Volunteer'} photo`;
+      modal.classList.remove('hidden');
+      document.body.classList.add('overflow-hidden');
+    };
+
+    const attachModalHandlers = () => {
+      const buttons = carousel.querySelectorAll('.view-profile-btn');
+      buttons.forEach((btn) => {
+        btn.addEventListener('click', (e) => {
+          const card = e.currentTarget.closest('[data-name]');
+          openModal(card);
+        });
+      });
+    };
+
+    attachModalHandlers();
+
+    modalBackdrop?.addEventListener('click', closeModal);
+    modalClose?.addEventListener('click', closeModal);
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeModal();
+    });
+  })();
+</script>

@@ -1,0 +1,188 @@
+---
+layout: layouts/base.html
+title: Events
+permalink: /events/
+contentWrapperClass: ""
+---
+{% set events = collections.blog or [] %}
+
+<!-- Events hero -->
+<section class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-brand-900 to-brand-700 text-white shadow-lg">
+  <div class="absolute inset-0 opacity-30 pointer-events-none" aria-hidden="true">
+    <div class="h-full w-full bg-[radial-gradient(circle_at_20%_20%,rgba(46,196,182,0.3),transparent_35%),radial-gradient(circle_at_80%_0%,rgba(255,255,255,0.15),transparent_25%)]"></div>
+  </div>
+  <div class="relative mx-auto flex max-w-5xl flex-col gap-3 px-6 py-12 sm:px-10">
+    <p class="text-xs font-semibold uppercase tracking-[0.35em] text-accent">Events</p>
+    <h1 class="text-3xl sm:text-4xl font-bold">Connect with the GuardianLink community</h1>
+    <p class="text-white/80 max-w-3xl text-base sm:text-lg">
+      Join webinars, workshops, and meetups focused on cyber readiness for NGOs and the volunteers who support them.
+    </p>
+  </div>
+</section>
+
+<!-- Events calendar + lists (upcoming/past) -->
+<section class="mt-10 space-y-8">
+  {% if events.length %}
+    <div class="grid lg:grid-cols-[2fr,1.1fr] gap-6 items-start">
+      <article class="card-surface p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs uppercase tracking-[0.3em] text-brand-700">Monthly calendar</p>
+            <h2 class="text-xl font-semibold text-slate-900" id="calendar-title">Upcoming</h2>
+          </div>
+          <div class="flex gap-2">
+            <button id="prev-month" class="btn-secondary px-4 disabled:opacity-60 disabled:cursor-not-allowed" type="button">Prev</button>
+            <button id="next-month" class="btn-primary px-4" type="button">Next</button>
+          </div>
+        </div>
+        <div class="grid grid-cols-7 text-center text-xs font-semibold uppercase tracking-wide text-slate-500">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
+        <div id="calendar-grid" class="grid grid-cols-7 gap-2 text-sm"></div>
+        <p class="text-xs text-slate-500">Click a highlighted day to view event details.</p>
+      </article>
+
+      <article class="card-surface p-5 sm:p-6 space-y-4">
+        <div class="flex items-center justify-between">
+          <h3 class="text-lg font-semibold text-slate-900">Upcoming events</h3>
+          <a class="btn-secondary text-xs px-3" href="#past-events">View past</a>
+        </div>
+        <div id="upcoming-list" class="space-y-3"></div>
+      </article>
+    </div>
+
+    <div class="card-surface p-5 sm:p-6 space-y-4" id="past-events">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-xs uppercase tracking-[0.3em] text-brand-700">Archive</p>
+          <h3 class="text-lg font-semibold text-slate-900">Past events</h3>
+        </div>
+      </div>
+      <div id="past-list" class="space-y-3"></div>
+    </div>
+
+    <div id="event-data" class="hidden">
+      {% for event in events %}
+        <div
+          data-event
+          data-title="{{ event.data.title | replace('\"', '\\\"') }}"
+          data-url="{{ event.url }}"
+          data-date="{{ event.date | date('yyyy-LL-dd') }}"
+          data-excerpt="{{ event.templateContent | striptags | trim | replace('\"', '\\\"') }}"
+        ></div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="rounded-xl border border-brand-100 bg-brand-50/60 px-4 py-5 text-brand-900">
+      No events yet — check back soon.
+    </div>
+  {% endif %}
+</section>
+
+{% if events.length %}
+<script>
+  (() => {
+    const dataEls = Array.from(document.querySelectorAll('[data-event]'));
+    const today = new Date();
+    const startMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+    const events = dataEls.map((el) => ({
+      title: el.dataset.title || 'Untitled event',
+      url: el.dataset.url || '#',
+      date: new Date(el.dataset.date),
+      dateKey: el.dataset.date,
+      excerpt: el.dataset.excerpt || ''
+    })).sort((a, b) => a.date - b.date);
+
+    const calendarTitle = document.getElementById('calendar-title');
+    const grid = document.getElementById('calendar-grid');
+    const prevBtn = document.getElementById('prev-month');
+    const nextBtn = document.getElementById('next-month');
+    const upcomingList = document.getElementById('upcoming-list');
+    const pastList = document.getElementById('past-list');
+
+    let viewYear = today.getFullYear();
+    let viewMonth = today.getMonth();
+
+    const formatMonth = (y, m) =>
+      new Date(y, m, 1).toLocaleDateString(undefined, { month: 'long', year: 'numeric' });
+
+    const renderLists = () => {
+      const upcoming = events.filter((e) => e.date >= startMonth);
+      const past = events.filter((e) => e.date < startMonth).reverse();
+
+      const makeCard = (e) => `
+        <article class="rounded-xl border border-brand-100 bg-white p-4 shadow-sm">
+          <div class="flex items-center justify-between text-xs font-semibold uppercase tracking-[0.2em] text-brand-700">
+            <span>Event</span><span>${e.date.toLocaleDateString(undefined, { dateStyle: 'medium' })}</span>
+          </div>
+          <h4 class="text-base font-semibold text-slate-900 mt-1"><a class="hover:text-brand-800 transition" href="${e.url}">${e.title}</a></h4>
+          <p class="text-slate-700 text-sm line-clamp-3">${e.excerpt}</p>
+          <div class="mt-3"><a class="btn-primary text-sm" href="${e.url}">View details</a></div>
+        </article>`;
+
+      upcomingList.innerHTML = upcoming.length ? upcoming.map(makeCard).join('') : '<p class="text-slate-600 text-sm">No upcoming events yet.</p>';
+      pastList.innerHTML = past.length ? past.map(makeCard).join('') : '<p class="text-slate-600 text-sm">No past events archived.</p>';
+    };
+
+    const renderCalendar = () => {
+      const firstDay = new Date(viewYear, viewMonth, 1);
+      calendarTitle.textContent = formatMonth(viewYear, viewMonth);
+
+      const daysInMonth = new Date(viewYear, viewMonth + 1, 0).getDate();
+      const startWeekday = firstDay.getDay();
+      const cells = [];
+
+      for (let i = 0; i < startWeekday; i++) cells.push('<div class="h-16 rounded-lg bg-transparent"></div>');
+
+      for (let day = 1; day <= daysInMonth; day++) {
+        const key = `${viewYear}-${String(viewMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const matches = events.filter((e) => e.dateKey === key);
+        if (matches.length) {
+          const event = matches[0];
+          cells.push(`
+            <a href="${event.url}" class="group h-16 rounded-lg border border-brand-200 bg-white p-2 flex flex-col justify-between shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+              <span class="text-slate-900 font-semibold">${day}</span>
+              <span class="text-[11px] text-brand-700 leading-tight group-hover:text-brand-800 line-clamp-2">${event.title}</span>
+            </a>
+          `);
+        } else {
+          cells.push(`<div class="h-16 rounded-lg border border-slate-100 bg-white/60 p-2 text-slate-500">${day}</div>`);
+        }
+      }
+
+      grid.innerHTML = cells.join('');
+
+      const viewDate = new Date(viewYear, viewMonth, 1);
+      const atStart = viewDate <= startMonth;
+      prevBtn.disabled = atStart;
+      prevBtn.classList.toggle('opacity-60', atStart);
+      if (atStart) {
+        prevBtn.classList.add('btn-secondary');
+        prevBtn.classList.remove('btn-primary');
+      } else {
+        prevBtn.classList.remove('btn-secondary');
+        prevBtn.classList.add('btn-primary');
+      }
+    };
+
+    prevBtn.addEventListener('click', () => {
+      const candidate = new Date(viewYear, viewMonth - 1, 1);
+      if (candidate >= startMonth) {
+        viewYear = candidate.getFullYear();
+        viewMonth = candidate.getMonth();
+        renderCalendar();
+      }
+    });
+
+    nextBtn.addEventListener('click', () => {
+      const next = new Date(viewYear, viewMonth + 1, 1);
+      viewYear = next.getFullYear();
+      viewMonth = next.getMonth();
+      renderCalendar();
+    });
+
+    renderLists();
+    renderCalendar();
+  })();
+</script>
+{% endif %}
