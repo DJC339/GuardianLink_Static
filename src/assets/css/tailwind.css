@@ -41,25 +41,28 @@
     @apply text-white underline underline-offset-8;
   }
 
-.hero-overlay {
-  @apply absolute inset-0 flex flex-col justify-center rounded-2xl px-6 sm:px-10;
-  background: linear-gradient(115deg, rgba(27, 49, 76, 0.55), rgba(46, 196, 182, 0.35), rgba(27, 49, 76, 0.45));
-}
-
   .hero-heading {
-    @apply text-3xl sm:text-4xl font-bold text-white mb-2;
+    @apply font-bold text-white mb-2 text-[1.8rem] md:text-[2.4rem];
   }
 
   .hero-subtitle {
-    @apply text-white/90 max-w-2xl text-base sm:text-lg leading-7;
+    @apply text-white/90 max-w-[700px] text-[0.95rem] md:text-[1.05rem] leading-[1.6];
   }
 
   .current-profile-pic {
-    @apply w-32 h-32 object-cover rounded-full border-2 border-slate-200 mx-auto mb-3;
+    @apply w-[120px] h-[120px] object-cover rounded-full border-2 border-slate-200 mx-auto mb-3;
   }
 
   .common-profile {
-    @apply max-w-3xl mx-auto mt-8 mb-16 bg-white rounded-xl shadow-lg p-6 text-center;
+    @apply max-w-[700px] mx-auto mt-[30px] mb-[80px] bg-white rounded-[10px] shadow-[0_4px_10px_rgba(0,0,0,0.12)] p-6 text-center;
+  }
+
+  .common-profile h2 {
+    @apply mb-[10px] font-bold;
+  }
+
+  .common-profile p {
+    @apply my-2 text-[16px] text-[#555];
   }
 
   .badge-role {
@@ -71,7 +74,54 @@
   }
 
   .search-card {
-    @apply bg-white rounded-xl border border-slate-200 shadow-sm p-4;
+    @apply bg-white rounded-[12px] shadow-[0_2px_8px_rgba(0,0,0,0.1)] p-4;
+  }
+
+  .navbar-brand img {
+    @apply max-h-[4.5em] border-2 border-white rounded-[5px];
+  }
+
+  .hero-overlay {
+    @apply absolute inset-0 flex flex-col justify-center rounded-[12px] px-6 sm:px-10;
+    background: linear-gradient(115deg, rgba(27, 49, 76, 0.55), rgba(46, 196, 182, 0.35), rgba(27, 49, 76, 0.45));
+  }
+
+  .hero-image {
+    @apply w-full h-[280px] object-cover block rounded-[12px];
+    filter: brightness(1.08) saturate(1.05);
+  }
+
+  .card {
+    @apply rounded-[10px] overflow-hidden shadow-[0_2px_6px_rgba(0,0,0,0.08)] transition duration-200 ease-in-out;
+  }
+
+  .card:hover {
+    @apply -translate-y-1 shadow-[0_6px_12px_rgba(0,0,0,0.14)];
+  }
+
+  .card-body {
+    @apply p-5;
+  }
+
+  .btn {
+    @apply text-[16px] px-4 py-2 rounded-lg;
+  }
+
+  .btn-light.fw-bold {
+    @apply border border-[#212529];
+  }
+
+  .profile-actions {
+    @apply flex flex-col md:flex-row justify-center gap-2.5 mt-4;
+  }
+
+  .inbox-container,
+  .message-view {
+    @apply bg-white rounded-[10px] shadow-[0_4px_10px_rgba(0,0,0,0.1)] p-[30px];
+  }
+
+  .container {
+    @apply pt-[30px] pb-[60px];
   }
 
   .hero-aurora {
@@ -87,10 +137,6 @@
     z-index: 1;
     animation: aurora 12s ease-in-out infinite alternate;
     pointer-events: none;
-  }
-
-  .hero-image {
-    filter: brightness(1.08) saturate(1.05);
   }
 }
 
