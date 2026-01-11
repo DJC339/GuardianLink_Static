@@ -7,9 +7,9 @@
     "start": "npm run dev",
     "dev": "concurrently \"npm:dev:eleventy\" \"npm:dev:css\"",
     "dev:eleventy": "eleventy --serve",
-    "dev:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/assets/css/tailwind.css -o ./src/assets/css/main.css --watch",
+    "dev:css": "tailwindcss -i ./src/assets/css/tailwind.css -o ./src/assets/css/main.css --watch",
     "build": "npm run build:css && eleventy",
-    "build:css": "node ./node_modules/tailwindcss/lib/cli.js -i ./src/assets/css/tailwind.css -o ./src/assets/css/main.css --minify"
+    "build:css": "tailwindcss -i ./src/assets/css/tailwind.css -o ./src/assets/css/main.css --minify"
   },
   "engines": {
     "node": ">=18"
