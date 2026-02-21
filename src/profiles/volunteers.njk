@@ -58,7 +58,7 @@ permalink: /profiles/volunteers/
 
   <div id="modal" class="fixed inset-0 z-40 hidden items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="modal-name">
     <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
-    <div class="relative z-10 w-full max-w-xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
+    <div data-modal-panel class="relative z-10 w-full max-w-xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
       <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
         <div>
           <p class="text-xs uppercase tracking-wide text-slate-500">Volunteer Profile</p>
@@ -151,17 +151,19 @@ permalink: /profiles/volunteers/
     const modalAvailability = document.getElementById('modal-availability');
     const modalCriminal = document.getElementById('modal-criminal');
     const modalImg = document.getElementById('modal-img');
-    const modalPanel = modal?.querySelector('.relative.z-10');
+    const modalPanel = modal?.querySelector('[data-modal-panel]');
     const getFocusable = () => modal?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
 
     const closeModal = () => {
+      if (!modal) return;
       modal.classList.add('hidden');
+      modal.classList.remove('flex');
       document.body.classList.remove('overflow-hidden');
       lastTrigger?.focus();
     };
 
     const openModal = (card, trigger) => {
-      if (!card) return;
+      if (!card || !modal || !modalName || !modalEmail || !modalSpecialty || !modalAvailability || !modalCriminal || !modalImg) return;
       lastTrigger = trigger || null;
       modalName.textContent = card.dataset.name || '';
       modalEmail.textContent = card.dataset.email || '';
@@ -171,21 +173,16 @@ permalink: /profiles/volunteers/
       modalImg.src = card.dataset.img || '/assets/images/placeholder.png';
       modalImg.alt = `${card.dataset.name || 'Volunteer'} photo`;
       modal.classList.remove('hidden');
+      modal.classList.add('flex');
       document.body.classList.add('overflow-hidden');
       modalClose?.focus();
     };
-
-    const attachModalHandlers = () => {
-      const buttons = carousel.querySelectorAll('.view-profile-btn');
-      buttons.forEach((btn) => {
-        btn.addEventListener('click', (e) => {
-          const card = e.currentTarget.closest('[data-name]');
-          openModal(card, e.currentTarget);
-        });
-      });
-    };
-
-    attachModalHandlers();
+    carousel.addEventListener('click', (e) => {
+      const btn = e.target.closest('.view-profile-btn');
+      if (!btn || !carousel.contains(btn)) return;
+      const card = btn.closest('[data-name]');
+      openModal(card, btn);
+    });
 
     modalBackdrop?.addEventListener('click', closeModal);
     modalClose?.addEventListener('click', closeModal);

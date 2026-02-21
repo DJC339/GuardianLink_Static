@@ -19,18 +19,18 @@ permalink: /profiles/ngos/
   ) }}
 
   <div class="relative">
-    <div class="pointer-events-none absolute inset-y-6 left-0 w-10 bg-gradient-to-r from-brand-50/80 to-transparent rounded-l-2xl"></div>
-    <div class="pointer-events-none absolute inset-y-6 right-0 w-10 bg-gradient-to-l from-brand-50/80 to-transparent rounded-r-2xl"></div>
+    <div class="pointer-events-none absolute inset-y-6 left-0 w-10 bg-gradient-to-r from-brand-50/80 to-transparent rounded-l-2xl hidden sm:block"></div>
+    <div class="pointer-events-none absolute inset-y-6 right-0 w-10 bg-gradient-to-l from-brand-50/80 to-transparent rounded-r-2xl hidden sm:block"></div>
 
     <p class="text-sm text-slate-600 mb-2 sm:hidden">Swipe to browse</p>
 
     <div class="flex items-center gap-3">
       <button id="prev-btn" type="button" class="hidden sm:inline-flex btn-primary !px-4">Prev</button>
-      <div id="carousel" class="relative flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory hide-scrollbar w-full">
+      <div id="carousel" class="relative flex gap-4 sm:gap-6 overflow-x-auto px-1 sm:px-0 pb-4 snap-x snap-mandatory hide-scrollbar w-full">
         {% for profile in ngoProfiles %}
           {% set user = users | findUser(profile.user_id) %}
           {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
-          <article class="ngo-card card-surface w-[88vw] sm:w-80 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
+          <article class="ngo-card card-surface w-[84vw] max-w-xs sm:w-80 shrink-0 snap-center p-5 sm:p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
             <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
             <h2 class="text-lg font-semibold">{{ user.name }}</h2>
             <p class="text-slate-600 text-sm">{{ user.email }}</p>
