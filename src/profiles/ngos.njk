@@ -18,35 +18,26 @@ permalink: /profiles/ngos/
     "Search by name or email"
   ) }}
 
-  <div class="relative">
-    <div class="pointer-events-none absolute inset-y-6 left-0 w-10 bg-gradient-to-r from-brand-50/80 to-transparent rounded-l-2xl hidden sm:block"></div>
-    <div class="pointer-events-none absolute inset-y-6 right-0 w-10 bg-gradient-to-l from-brand-50/80 to-transparent rounded-r-2xl hidden sm:block"></div>
+  <p class="text-sm text-slate-600 mb-2 sm:hidden">Swipe to browse</p>
 
-    <p class="text-sm text-slate-600 mb-2 sm:hidden">Swipe to browse</p>
-
-    <div class="flex items-center gap-3">
-      <button id="prev-btn" type="button" class="hidden sm:inline-flex btn-primary !px-4">Prev</button>
-      <div id="carousel" class="relative flex gap-4 sm:gap-6 overflow-x-auto px-1 sm:px-0 pb-4 snap-x snap-mandatory hide-scrollbar w-full">
-        {% for profile in ngoProfiles %}
-          {% set user = users | findUser(profile.user_id) %}
-          {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
-          <article class="ngo-card card-surface w-[84vw] max-w-xs sm:w-80 shrink-0 snap-center p-5 sm:p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
-            <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
-            <h2 class="text-lg font-semibold">{{ user.name }}</h2>
-            <p class="text-slate-600 text-sm">{{ user.email }}</p>
-            <span class="badge-role">{{ profile.organization_name or "Non-profit" }}</span>
-            <div class="text-sm text-slate-700">
-              {% if profile.concern %}<p><strong>Priority:</strong> {{ profile.concern }}</p>{% endif %}
-              {% if profile.availability %}<p><strong>Engagement:</strong> {{ profile.availability }}</p>{% endif %}
-            </div>
-            <div class="mt-3 w-full">
-              <a class="btn-secondary w-full justify-center" href="/profiles/{{ profile.id }}/">View Profile</a>
-            </div>
-          </article>
-        {% endfor %}
-      </div>
-      <button id="next-btn" type="button" class="hidden sm:inline-flex btn-primary !px-4">Next</button>
-    </div>
+  <div id="carousel" class="flex gap-4 sm:gap-6 overflow-x-auto pb-4 snap-x snap-mandatory">
+    {% for profile in ngoProfiles %}
+      {% set user = users | findUser(profile.user_id) %}
+      {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
+      <article class="ngo-card card-surface w-72 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
+        <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
+        <h2 class="text-lg font-semibold">{{ user.name }}</h2>
+        <p class="text-slate-600 text-sm">{{ user.email }}</p>
+        <span class="badge-role">{{ profile.organization_name or "Non-profit" }}</span>
+        <div class="text-sm text-slate-700">
+          {% if profile.concern %}<p><strong>Priority:</strong> {{ profile.concern }}</p>{% endif %}
+          {% if profile.availability %}<p><strong>Engagement:</strong> {{ profile.availability }}</p>{% endif %}
+        </div>
+        <div class="mt-3 w-full">
+          <a class="btn-secondary w-full justify-center" href="/profiles/{{ profile.id }}/">View Profile</a>
+        </div>
+      </article>
+    {% endfor %}
   </div>
 
   <div id="empty-state" class="hidden mt-6 rounded-lg border border-brand-200 bg-brand-50 text-brand-800 px-4 py-3" role="alert">
@@ -57,8 +48,6 @@ permalink: /profiles/ngos/
 <script>
   (function () {
     const carousel = document.getElementById('carousel');
-    const prev = document.getElementById('prev-btn');
-    const next = document.getElementById('next-btn');
     const searchForm = document.getElementById('search-form');
     const searchInput = document.getElementById('search-input');
     const emptyState = document.getElementById('empty-state');
@@ -71,42 +60,8 @@ permalink: /profiles/ngos/
       return;
     }
 
-    const highlightClosest = () => {
-      const trackRect = carousel.getBoundingClientRect();
-      const centerX = trackRect.left + trackRect.width / 2;
-      let closest = null;
-      let closestDist = Number.MAX_VALUE;
-      cards.forEach((card) => {
-        const rect = card.getBoundingClientRect();
-        const cardCenter = rect.left + rect.width / 2;
-        const dist = Math.abs(centerX - cardCenter);
-        if (dist < closestDist) {
-          closest = card;
-          closestDist = dist;
-        }
-      });
-      cards.forEach((card) => card.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white'));
-      if (closest) {
-        closest.classList.add('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white');
-      }
-    };
-
-    highlightClosest();
-    carousel.addEventListener('scroll', () => {
-      window.requestAnimationFrame(highlightClosest);
-    });
-
-    const scrollByAmount = () => {
-      const card = cards[0];
-      const amount = card ? card.getBoundingClientRect().width + 24 : 240;
-      return amount;
-    };
-
-    prev?.addEventListener('click', () => {
-      carousel.scrollBy({ left: -scrollByAmount(), behavior: 'smooth' });
-    });
-    next?.addEventListener('click', () => {
-      carousel.scrollBy({ left: scrollByAmount(), behavior: 'smooth' });
+    window.requestAnimationFrame(() => {
+      cards[0]?.scrollIntoView({ behavior: 'auto', inline: 'center', block: 'nearest' });
     });
 
     if (searchForm && searchInput) {
@@ -124,8 +79,12 @@ permalink: /profiles/ngos/
         });
         if (match) {
           match.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
-          cards.forEach((card) => card.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white'));
-          match.classList.add('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105', 'bg-white');
+          cards.forEach((card) => card.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105'));
+          match.classList.add('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105');
+
+          setTimeout(() => {
+            match.classList.remove('ring-2', 'ring-brand-500', 'shadow-2xl', 'scale-105');
+          }, 3500);
         }
       });
     }
