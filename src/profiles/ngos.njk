@@ -24,11 +24,19 @@ permalink: /profiles/ngos/
     {% for profile in ngoProfiles %}
       {% set user = users | findUser(profile.user_id) %}
       {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
-      <article class="ngo-card card-surface w-72 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
+      {% set specialty = profile.organization_name or "Non-profit" %}
+      <article class="profile-card card-surface w-72 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300"
+        data-name="{{ user.name }}"
+        data-name-lower="{{ user.name | lower }}"
+        data-email="{{ user.email }}"
+        data-email-lower="{{ user.email | lower }}"
+        data-specialty="{{ specialty }}"
+        data-specialty-lower="{{ specialty | lower }}"
+      >
         <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
         <h2 class="text-lg font-semibold">{{ user.name }}</h2>
         <p class="text-slate-600 text-sm">{{ user.email }}</p>
-        <span class="badge-role">{{ profile.organization_name or "Non-profit" }}</span>
+        <span class="badge-role">{{ specialty }}</span>
         <div class="text-sm text-slate-700">
           {% if profile.concern %}<p><strong>Priority:</strong> {{ profile.concern }}</p>{% endif %}
           {% if profile.availability %}<p><strong>Engagement:</strong> {{ profile.availability }}</p>{% endif %}
@@ -54,7 +62,7 @@ permalink: /profiles/ngos/
 
     if (!carousel) return;
 
-    const cards = Array.from(carousel.querySelectorAll('.ngo-card'));
+    const cards = Array.from(carousel.querySelectorAll('[data-name]'));
     if (cards.length === 0) {
       if (emptyState) emptyState.classList.remove('hidden');
       return;
@@ -73,9 +81,10 @@ permalink: /profiles/ngos/
           return;
         }
         const match = cards.find((card) => {
-          const name = card.dataset.name || '';
-          const email = card.dataset.email || '';
-          return name.includes(term) || email.includes(term);
+          const name = (card.dataset.nameLower || '').toLowerCase();
+          const email = (card.dataset.emailLower || '').toLowerCase();
+          const specialty = (card.dataset.specialtyLower || '').toLowerCase();
+          return name.includes(term) || email.includes(term) || specialty.includes(term);
         });
         if (match) {
           match.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
