@@ -18,14 +18,14 @@
       </a>
     </div>
 
-    <div class="hidden items-center gap-6 md:flex flex-1 justify-end">
+    <nav class="hidden items-center gap-6 md:flex flex-1 justify-end" aria-label="Primary">
       <div class="flex items-center gap-3">
         <a class="btn-primary" href="/">Home</a>
         <a class="btn-primary" href="/resources/">Resources</a>
         <a class="btn-primary" href="/events/">Events</a>
       </div>
       <a class="btn-primary ml-6" href="/contact/">Contact Us</a>
-    </div>
+    </nav>
 
     <button
       id="nav-toggle"
@@ -60,7 +60,7 @@
           Close
         </button>
       </div>
-      <div class="flex flex-col gap-2 px-4 py-4 text-sm font-semibold text-slate-800">
+      <nav class="flex flex-col gap-2 px-4 py-4 text-sm font-semibold text-slate-800" aria-label="Mobile">
         {% for item in navigation %}
           {% set isActive = page and page.url and page.url == item.url %}
           <a
@@ -86,7 +86,7 @@
           <a class="btn-secondary justify-center" href="/profiles/volunteers/">Volunteer profiles</a>
           <a class="btn-secondary justify-center" href="/profiles/ngos/">NGO profiles</a>
         </div>
-      </div>
+      </nav>
     </div>
   </div>
 </header>

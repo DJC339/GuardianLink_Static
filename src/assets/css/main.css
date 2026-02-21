@@ -1308,6 +1308,18 @@ body {
   pointer-events: none;
 }
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
 .pointer-events-none {
   pointer-events: none;
 }
@@ -1383,6 +1395,10 @@ body {
   margin-bottom: 1.5rem;
 }
 
+.ml-6 {
+  margin-left: 1.5rem;
+}
+
 .mt-1 {
   margin-top: 0.25rem;
 }
@@ -1405,10 +1421,6 @@ body {
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.ml-6 {
-  margin-left: 1.5rem;
 }
 
 .line-clamp-2 {
@@ -2349,8 +2361,8 @@ body {
   justify-content: center;
   border-radius: 9999px;
   background-image: linear-gradient(to right, var(--tw-gradient-stops));
-  --tw-gradient-from: #223e61 var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(34 62 97 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: #d7e9ff var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(215 233 255 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
   --tw-gradient-to: #2ec4b6 var(--tw-gradient-to-position);
   padding-left: 1.25rem;
@@ -2361,7 +2373,7 @@ body {
   line-height: 1.25rem;
   font-weight: 600;
   --tw-text-opacity: 1;
-  color: rgb(255 255 255 / var(--tw-text-opacity));
+  color: rgb(27 49 76 / var(--tw-text-opacity));
   --tw-shadow: 0 8px 20px rgba(27,49,76,0.25),0 2px 6px rgba(0,0,0,0.08);
   --tw-shadow-colored: 0 8px 20px var(--tw-shadow-color), 0 2px 6px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);
@@ -2373,10 +2385,10 @@ body {
 .btn-primary:hover {
   --tw-translate-y: -0.125rem;
   transform: translate(var(--tw-translate-x), var(--tw-translate-y)) rotate(var(--tw-rotate)) skewX(var(--tw-skew-x)) skewY(var(--tw-skew-y)) scaleX(var(--tw-scale-x)) scaleY(var(--tw-scale-y));
-  --tw-gradient-from: #1b314c var(--tw-gradient-from-position);
-  --tw-gradient-to: rgb(27 49 76 / 0) var(--tw-gradient-to-position);
+  --tw-gradient-from: #b5d3f5 var(--tw-gradient-from-position);
+  --tw-gradient-to: rgb(181 211 245 / 0) var(--tw-gradient-to-position);
   --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to);
-  --tw-gradient-to: #274c7a var(--tw-gradient-to-position);
+  --tw-gradient-to: #8ab6e6 var(--tw-gradient-to-position);
   --tw-shadow: 0 10px 24px rgba(27,49,76,0.3),0 3px 8px rgba(0,0,0,0.12);
   --tw-shadow-colored: 0 10px 24px var(--tw-shadow-color), 0 3px 8px var(--tw-shadow-color);
   box-shadow: var(--tw-ring-offset-shadow, 0 0 #0000), var(--tw-ring-shadow, 0 0 #0000), var(--tw-shadow);

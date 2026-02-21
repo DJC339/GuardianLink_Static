@@ -17,9 +17,9 @@ contentWrapperClass: ""
   <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="common-profile">
       <div class="profile-picture text-center mb-3">
-        <img src="/assets/images/placeholder.png" alt="Profile Picture" class="current-profile-pic">
+        <img src="/assets/images/placeholder.png" alt="{{ user.name }} profile photo" class="current-profile-pic">
       </div>
-      <h2 class="text-2xl font-bold">{{ user.name }}</h2>
+      <h1 class="text-2xl font-bold">{{ user.name }}</h1>
       <p><strong>Email:</strong> {{ user.email }}</p>
       <p><strong>Account Type:</strong> {{ user.user_type | userTypeLabel }}</p>
       <p><strong>Member since:</strong> {{ user.created_at | formatDate }}</p>

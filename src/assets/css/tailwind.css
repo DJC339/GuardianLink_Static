@@ -142,7 +142,7 @@
 
 @layer utilities {
   .btn-primary {
-    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-brand-800 to-accent px-5 py-2.5 text-sm font-semibold text-white shadow-[0_8px_20px_rgba(27,49,76,0.25),0_2px_6px_rgba(0,0,0,0.08)] transition hover:shadow-[0_10px_24px_rgba(27,49,76,0.3),0_3px_8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:from-brand-900 hover:to-brand-700;
+    @apply inline-flex items-center justify-center rounded-full bg-gradient-to-r from-brand-100 to-accent px-5 py-2.5 text-sm font-semibold text-brand-900 shadow-[0_8px_20px_rgba(27,49,76,0.25),0_2px_6px_rgba(0,0,0,0.08)] transition hover:shadow-[0_10px_24px_rgba(27,49,76,0.3),0_3px_8px_rgba(0,0,0,0.12)] hover:-translate-y-0.5 hover:from-brand-200 hover:to-brand-300;
   }
 
   .btn-secondary {

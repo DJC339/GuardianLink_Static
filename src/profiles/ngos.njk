@@ -32,7 +32,7 @@ permalink: /profiles/ngos/
           {% set imgSrc = "/assets/images/" + (profile.profile_picture or "placeholder.png") %}
           <article class="ngo-card card-surface w-[88vw] sm:w-80 shrink-0 snap-center p-6 flex flex-col items-center text-center gap-2 transition duration-300" data-name="{{ user.name | lower }}" data-email="{{ user.email | lower }}">
             <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
-            <h5 class="text-lg font-semibold">{{ user.name }}</h5>
+            <h2 class="text-lg font-semibold">{{ user.name }}</h2>
             <p class="text-slate-600 text-sm">{{ user.email }}</p>
             <span class="badge-role">{{ profile.organization_name or "Non-profit" }}</span>
             <div class="text-sm text-slate-700">

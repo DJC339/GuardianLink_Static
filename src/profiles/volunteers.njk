@@ -36,7 +36,7 @@ permalink: /profiles/volunteers/
         data-id="{{ profile.id }}"
       >
         <img src="{{ imgSrc }}" alt="{{ user.name }}'s Profile Picture" class="current-profile-pic">
-        <h5 class="text-lg font-semibold">{{ user.name }}</h5>
+        <h2 class="text-lg font-semibold">{{ user.name }}</h2>
         <p class="text-slate-600 text-sm">{{ user.email }}</p>
         <span class="badge-role">{{ specialty }}</span>
         <div class="text-sm text-slate-700">
@@ -56,7 +56,7 @@ permalink: /profiles/volunteers/
     No volunteer profiles available to display.
   </div>
 
-  <div id="modal" class="fixed inset-0 z-40 hidden items-center justify-center px-4">
+  <div id="modal" class="fixed inset-0 z-40 hidden items-center justify-center px-4" role="dialog" aria-modal="true" aria-labelledby="modal-name">
     <div id="modal-backdrop" class="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"></div>
     <div class="relative z-10 w-full max-w-xl rounded-2xl bg-white shadow-2xl border border-slate-200 overflow-hidden">
       <div class="flex items-center justify-between px-6 py-4 border-b border-slate-100">
@@ -93,6 +93,7 @@ permalink: /profiles/volunteers/
     if (!carousel) return;
 
     let cards = Array.from(carousel.querySelectorAll('[data-name]'));
+    let lastTrigger = null;
 
     if (cards.length === 0) {
       if (emptyState) emptyState.classList.remove('hidden');
@@ -150,14 +151,18 @@ permalink: /profiles/volunteers/
     const modalAvailability = document.getElementById('modal-availability');
     const modalCriminal = document.getElementById('modal-criminal');
     const modalImg = document.getElementById('modal-img');
+    const modalPanel = modal?.querySelector('.relative.z-10');
+    const getFocusable = () => modal?.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
 
     const closeModal = () => {
       modal.classList.add('hidden');
       document.body.classList.remove('overflow-hidden');
+      lastTrigger?.focus();
     };
 
-    const openModal = (card) => {
+    const openModal = (card, trigger) => {
       if (!card) return;
+      lastTrigger = trigger || null;
       modalName.textContent = card.dataset.name || '';
       modalEmail.textContent = card.dataset.email || '';
       modalSpecialty.textContent = card.dataset.specialty || '';
@@ -167,6 +172,7 @@ permalink: /profiles/volunteers/
       modalImg.alt = `${card.dataset.name || 'Volunteer'} photo`;
       modal.classList.remove('hidden');
       document.body.classList.add('overflow-hidden');
+      modalClose?.focus();
     };
 
     const attachModalHandlers = () => {
@@ -174,7 +180,7 @@ permalink: /profiles/volunteers/
       buttons.forEach((btn) => {
         btn.addEventListener('click', (e) => {
           const card = e.currentTarget.closest('[data-name]');
-          openModal(card);
+          openModal(card, e.currentTarget);
         });
       });
     };
@@ -185,6 +191,20 @@ permalink: /profiles/volunteers/
     modalClose?.addEventListener('click', closeModal);
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') closeModal();
+    });
+    modalPanel?.addEventListener('keydown', (e) => {
+      if (e.key !== 'Tab') return;
+      const focusables = getFocusable();
+      if (!focusables || focusables.length === 0) return;
+      const first = focusables[0];
+      const last = focusables[focusables.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      }
     });
   })();
 </script>
